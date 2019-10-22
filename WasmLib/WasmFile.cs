@@ -1,13 +1,18 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using WasmLib.FileFormat.Sections;
+using WasmLib.Utils;
 
 namespace WasmLib
 {
     public class WasmFile
     {
         public int Version { get; private set; }
+
+        public TypeSection TypeSection { get; private set; } = TypeSection.Empty;
 
         private WasmFile() { }
 
@@ -28,6 +33,21 @@ namespace WasmLib
                 }
 
                 file.Version = br.ReadInt32();
+                Debug.Assert(file.Version == 1);
+
+                while (stream.Position < stream.Length) {
+                    var type = (SectionType)br.ReadVarUint7();
+                    uint size = br.ReadVarUint32();
+                    Debug.Assert(size < stream.Length - stream.Position);
+
+                    switch (type) {
+                        case SectionType.Type:
+                            file.TypeSection = TypeSection.Read(br);
+                            break;
+                        default:
+                            throw new NotImplementedException(type.ToString());
+                    }
+                }
             }
 
             return file;
