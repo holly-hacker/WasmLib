@@ -19,7 +19,7 @@ namespace WasmLib.FileFormat
 
             parameters = br.ReadValueKindArray();
             returnParameter = br.ReadValueKindArray();
-            Debug.Assert(ReturnParameter.Length == 1, $"Only 1 return parameter is supported, found {ReturnParameter.Length} in {nameof(FunctionSignature)}");
+            Debug.Assert(ReturnParameter.Length <= 1, $"Only 1 return parameter is supported, found {ReturnParameter.Length} in {nameof(FunctionSignature)}");
         }
 
         public override string ToString() => $"{(ReturnParameter.Any() ? ReturnParameter[0].ToString() : "void")}({string.Join(", ", Parameters.Select(x => x.ToString()))})";
