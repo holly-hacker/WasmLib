@@ -1,4 +1,4 @@
-namespace WasmLib.FileFormat.Sections
+namespace WasmLib.FileFormat
 {
     public enum SectionType
     {

@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using WasmLib.FileFormat.Sections;
+using WasmLib.FileFormat;
 using WasmLib.Utils;
 
 namespace WasmLib
@@ -12,14 +12,14 @@ namespace WasmLib
     {
         public int Version { get; private set; }
 
-        public TypeSection TypeSection { get; private set; } = TypeSection.Empty;
-        public ImportSection ImportSection { get; private set; } = ImportSection.Empty;
-        public FunctionSection FunctionSection { get; private set; } = FunctionSection.Empty;
-        public GlobalSection GlobalSection { get; private set; } = GlobalSection.Empty;
-        public ExportSection ExportSection { get; private set; } = ExportSection.Empty;
-        public ElementSection ElementSection { get; private set; } = ElementSection.Empty;
-        public CodeSection CodeSection { get; private set; } = CodeSection.Empty;
-        public DataSection DataSection { get; private set; } = DataSection.Empty;
+        public FunctionSignature[] FunctionTypes { get; private set; } = new FunctionSignature[0];
+        public Import[] Imports { get; private set; } = new Import[0];
+        public uint[] Functions { get; private set; } = new uint[0];
+        public Global[] Globals { get; private set; } = new Global[0];
+        public Export[] Exports { get; private set; } = new Export[0];
+        public Element[] Elements { get; private set; } = new Element[0];
+        public FunctionBody[] FunctionBodies { get; private set; } = new FunctionBody[0];
+        public DataSegment[] DataSegments { get; private set; } = new DataSegment[0];
 
         private WasmFile() { }
 
@@ -49,32 +49,33 @@ namespace WasmLib
                     Debug.Assert(size <= stream.Length - stream.Position);
 
                     switch (type) {
+                        // TODO: custom
                         case SectionType.Type:
-                            file.TypeSection = TypeSection.Read(br);
+                            file.FunctionTypes = br.ReadWasmArray<FunctionSignature>();
                             break;
                         case SectionType.Import:
-                            file.ImportSection = ImportSection.Read(br);
+                            file.Imports = br.ReadWasmArray<Import>();
                             break;
                         case SectionType.Function:
-                            file.FunctionSection = FunctionSection.Read(br);
+                            file.Functions = br.ReadVarUint32Array();
                             break;
                         // TODO: table
                         // TODO: memory
                         case SectionType.Global:
-                            file.GlobalSection = GlobalSection.Read(br);
+                            file.Globals = br.ReadWasmArray<Global>();
                             break;
                         case SectionType.Export:
-                            file.ExportSection = ExportSection.Read(br);
+                            file.Exports = br.ReadWasmArray<Export>();
                             break;
                         // TODO: start
                         case SectionType.Element:
-                            file.ElementSection = ElementSection.Read(br);
+                            file.Elements = br.ReadWasmArray<Element>();
                             break;
                         case SectionType.Code:
-                            file.CodeSection = CodeSection.Read(br);
+                            file.FunctionBodies = br.ReadWasmArray<FunctionBody>();
                             break;
                         case SectionType.Data:
-                            file.DataSection = DataSection.Read(br);
+                            file.DataSegments = br.ReadWasmArray<DataSegment>();
                             break;
                         default:
                             throw new NotImplementedException(type.ToString());
