@@ -1,4 +1,5 @@
 using System.IO;
+using WasmLib.FileFormat.Instructions;
 using WasmLib.Utils;
 
 namespace WasmLib.FileFormat
@@ -6,11 +7,12 @@ namespace WasmLib.FileFormat
     public class DataSegment : IDeserializable
     {
         public uint MemoryIndex => memoryIndex ?? throw new UninitializedFieldException();
-        public byte[] Expression => expression ?? throw new UninitializedFieldException();
+        public Instruction[] Expression => expression ?? throw new UninitializedFieldException();
         public byte[] Data => data ?? throw new UninitializedFieldException();
 
         private uint? memoryIndex;
-        private byte[]? expression, data;
+        private Instruction[]? expression;
+        private byte[]? data;
 
         public void Read(BinaryReader br)
         {

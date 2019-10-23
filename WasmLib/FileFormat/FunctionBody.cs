@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using WasmLib.FileFormat.Instructions;
 using WasmLib.Utils;
 
 namespace WasmLib.FileFormat
@@ -9,10 +10,10 @@ namespace WasmLib.FileFormat
     public class FunctionBody : IDeserializable
     {
         public ValueKind[] Locals => locals ?? throw new UninitializedFieldException();
-        public byte[] Body => body ?? throw new UninitializedFieldException();
+        public Instruction[] Body => body ?? throw new UninitializedFieldException();
 
         private ValueKind[]? locals;
-        private byte[]? body;
+        private Instruction[]? body;
 
         public void Read(BinaryReader br)
         {
@@ -31,8 +32,7 @@ namespace WasmLib.FileFormat
             locals = localList.ToArray();
 
             // read remaining bytes as function body
-            // TODO: disassemble
-            body = br.ReadBytes((int)(bodySize - (br.BaseStream.Position - oldPos)));
+            body = Disassembler.Disassemble(br, (uint)(bodySize - (br.BaseStream.Position - oldPos))).ToArray();
 
             Debug.Assert(br.BaseStream.Position == oldPos + bodySize);
         }

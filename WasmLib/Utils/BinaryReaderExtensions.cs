@@ -1,9 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using WasmLib.FileFormat;
+using WasmLib.FileFormat.Instructions;
 
 namespace WasmLib.Utils
 {
@@ -27,6 +27,22 @@ namespace WasmLib.Utils
             for (int i = 0; i < 5; i++) {
                 byte read = br.ReadByte();
                 ret |= (uint)((read & 0x7f) << (i * 7));
+
+                if ((read & 0x80) == 0) {
+                    return ret;
+                }
+            }
+
+            throw new Exception("Exceeded maximum length for VarUint32");
+        }
+
+        public static ulong ReadVarUint64(this BinaryReader br)
+        {
+            ulong ret = 0;
+
+            for (int i = 0; i < 10; i++) {
+                byte read = br.ReadByte();
+                ret |= (ulong)((read & 0x7f) << (i * 7));
 
                 if ((read & 0x80) == 0) {
                     return ret;
@@ -66,18 +82,6 @@ namespace WasmLib.Utils
 
         public static string ReadIdentifier(this BinaryReader br) => Encoding.UTF8.GetString(br.ReadWasmByteArray());
 
-        public static byte[] ReadExpression(this BinaryReader br)
-        {
-            // TODO: properly disassemble
-            // for now, just read until the next 0x0B byte, which represents the END opcode. This is not perfect as other instructions may contain it.
-            var list = new List<byte>();
-            byte b;
-            do {
-                b = br.ReadByte();
-                list.Add(b);
-            } while (b != 0x0B);
-
-            return list.ToArray();
-        }
+        public static Instruction[] ReadExpression(this BinaryReader br) => Disassembler.DisassembleExpression(br).ToArray();
     }
 }

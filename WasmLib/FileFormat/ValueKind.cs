@@ -6,5 +6,8 @@ namespace WasmLib.FileFormat
         I64 = 0x7e,
         F32 = 0x7d,
         F64 = 0x7c,
+
+        /// <remarks> Only used as block type </remarks>
+        Empty = 0x40,
     }
 }
