@@ -13,6 +13,7 @@ namespace WasmLib
         public int Version { get; private set; }
 
         public TypeSection TypeSection { get; private set; } = TypeSection.Empty;
+        public ImportSection ImportSection { get; private set; } = ImportSection.Empty;
 
         private WasmFile() { }
 
@@ -43,6 +44,9 @@ namespace WasmLib
                     switch (type) {
                         case SectionType.Type:
                             file.TypeSection = TypeSection.Read(br);
+                            break;
+                        case SectionType.Import:
+                            file.ImportSection = ImportSection.Read(br);
                             break;
                         default:
                             throw new NotImplementedException(type.ToString());

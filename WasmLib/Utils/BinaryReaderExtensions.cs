@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using WasmLib.FileFormat;
 
 namespace WasmLib.Utils
@@ -50,5 +51,7 @@ namespace WasmLib.Utils
 
         public static byte[] ReadWasmByteArray(this BinaryReader br) => br.ReadBytes(br.ReadVarInt32());
         public static WasmValueType[] ReadValueTypeArray(this BinaryReader br) => br.ReadBytes(br.ReadVarInt32()).Cast<WasmValueType>().ToArray();
+
+        public static string ReadIdentifier(this BinaryReader br) => Encoding.UTF8.GetString(br.ReadWasmByteArray());
     }
 }
