@@ -3,7 +3,7 @@ using WasmLib.Utils;
 
 namespace WasmLib.FileFormat
 {
-    public class Global
+    public class Global : IDeserializable
     {
         public GlobalType GlobalType => globalType ?? throw new UninitializedFieldException();
         public byte[] Expression => expression ?? throw new UninitializedFieldException();
@@ -11,12 +11,10 @@ namespace WasmLib.FileFormat
         private GlobalType? globalType;
         private byte[]? expression;
 
-        public static Global Read(BinaryReader br)
+        public void Read(BinaryReader br)
         {
-            return new Global {
-                globalType = GlobalType.Read(br),
-                expression = br.ReadExpression()
-            };
+            globalType = GlobalType.Read(br);
+            expression = br.ReadExpression();
         }
     }
 }

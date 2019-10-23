@@ -12,12 +12,8 @@ namespace WasmLib.FileFormat.Sections
         internal static GlobalSection Read(BinaryReader reader)
         {
             var read = new GlobalSection {
-                Globals = new Global[reader.ReadVarUint32()]
+                Globals = reader.ReadWasmArray<Global>()
             };
-
-            for (int i = 0; i < read.Globals.Length; i++) {
-                read.Globals[i] = Global.Read(reader);
-            }
 
             return read;
         }
