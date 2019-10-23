@@ -51,7 +51,7 @@ namespace WasmLib.Utils
         }
 
         public static byte[] ReadWasmByteArray(this BinaryReader br) => br.ReadBytes(br.ReadVarInt32());
-        public static WasmValueType[] ReadValueTypeArray(this BinaryReader br) => br.ReadBytes(br.ReadVarInt32()).Cast<WasmValueType>().ToArray();
+        public static ValueKind[] ReadValueKindArray(this BinaryReader br) => br.ReadBytes(br.ReadVarInt32()).Cast<ValueKind>().ToArray();
 
         public static uint[] ReadVarUint32Array(this BinaryReader br)
         {

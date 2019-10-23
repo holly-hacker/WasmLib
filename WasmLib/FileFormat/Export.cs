@@ -14,22 +14,22 @@ namespace WasmLib.FileFormat
 
         private string? name;
 
-        public ExportType Kind { get; private set; }
+        public ExportKind Kind { get; private set; }
 
         public uint Index { get; private set; }
 
         public void Read(BinaryReader br)
         {
             Name = br.ReadIdentifier();
-            Kind = (ExportType)br.ReadVarUint7();
+            Kind = (ExportKind)br.ReadVarUint7();
             Index = br.ReadVarUint32();
         }
 
         public override string ToString() => Kind switch {
-            ExportType.FuncIndex => $"(export \"{Name}\" (func {Index}))",
-            ExportType.TableIndex => $"(export \"{Name}\" (table {Index}))",
-            ExportType.MemoryIndex => $"(export \"{Name}\" (memory {Index}))",
-            ExportType.GlobalIndex => $"(export \"{Name}\" (global {Index}))",
+            ExportKind.FuncIndex => $"(export \"{Name}\" (func {Index}))",
+            ExportKind.TableIndex => $"(export \"{Name}\" (table {Index}))",
+            ExportKind.MemoryIndex => $"(export \"{Name}\" (memory {Index}))",
+            ExportKind.GlobalIndex => $"(export \"{Name}\" (global {Index}))",
             _ => throw new ArgumentOutOfRangeException()
         };
     }

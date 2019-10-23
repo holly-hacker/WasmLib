@@ -2,7 +2,7 @@ using System.ComponentModel;
 
 namespace WasmLib.FileFormat
 {
-    public enum ImportType : byte
+    public enum ImportKind : byte
     {
         [Description("func")] TypeIndex,
         [Description("table")] TableType,

@@ -21,39 +21,39 @@ namespace WasmLib.FileFormat
 
         private string? moduleName, exportName;
 
-        public ImportType Kind { get; private set; }
+        public ImportKind Kind { get; private set; }
 
-        /// <remarks> When <see cref="Kind"/> is <see cref="ImportType.TypeIndex"/> </remarks>
+        /// <remarks> When <see cref="Kind"/> is <see cref="ImportKind.TypeIndex"/> </remarks>
         public uint? SignatureIndex { get; private set; }
 
-        /// <remarks> When <see cref="Kind"/> is <see cref="ImportType.TableType"/> </remarks>
+        /// <remarks> When <see cref="Kind"/> is <see cref="ImportKind.TableType"/> </remarks>
         public Limits? TableSize { get; private set; }
 
-        /// <remarks> When <see cref="Kind"/> is <see cref="ImportType.MemoryType"/> </remarks>
+        /// <remarks> When <see cref="Kind"/> is <see cref="ImportKind.MemoryType"/> </remarks>
         public Limits? MemorySize { get; private set; }
 
-        /// <remarks> When <see cref="Kind"/> is <see cref="ImportType.GlobalType"/> </remarks>
+        /// <remarks> When <see cref="Kind"/> is <see cref="ImportKind.GlobalType"/> </remarks>
         public GlobalType? GlobalType { get; private set; }
 
         public void Read(BinaryReader br)
         {
             ModuleName = br.ReadIdentifier();
             ExportName = br.ReadIdentifier();
-            Kind = (ImportType)br.ReadVarUint7();
+            Kind = (ImportKind)br.ReadVarUint7();
 
             switch (Kind) {
-                case ImportType.TypeIndex:
+                case ImportKind.TypeIndex:
                     SignatureIndex = br.ReadVarUint32();
                     break;
-                case ImportType.TableType:
+                case ImportKind.TableType:
                     byte elementType = br.ReadVarUint7();
                     Debug.Assert(elementType == 0x70);
                     TableSize = Limits.Read(br);
                     break;
-                case ImportType.MemoryType:
+                case ImportKind.MemoryType:
                     MemorySize = Limits.Read(br);
                     break;
-                case ImportType.GlobalType:
+                case ImportKind.GlobalType:
                     GlobalType = FileFormat.GlobalType.Read(br);
                     break;
                 default:
@@ -62,10 +62,10 @@ namespace WasmLib.FileFormat
         }
 
         public override string ToString() => Kind switch {
-            ImportType.TypeIndex => $"(import \"{ModuleName}\" \"{ExportName}\" (func (type {SignatureIndex})))",
-            ImportType.TableType => $"(import \"{ModuleName}\" \"{ExportName}\" (table {TableSize?.Min} {TableSize?.Max}))",
-            ImportType.MemoryType => $"(import \"{ModuleName}\" \"{ExportName}\" (memory {MemorySize?.Min} {MemorySize?.Max}))",
-            ImportType.GlobalType => $"(import \"{ModuleName}\" \"{ExportName}\" (global {GlobalType}))",
+            ImportKind.TypeIndex => $"(import \"{ModuleName}\" \"{ExportName}\" (func (type {SignatureIndex})))",
+            ImportKind.TableType => $"(import \"{ModuleName}\" \"{ExportName}\" (table {TableSize?.Min} {TableSize?.Max}))",
+            ImportKind.MemoryType => $"(import \"{ModuleName}\" \"{ExportName}\" (memory {MemorySize?.Min} {MemorySize?.Max}))",
+            ImportKind.GlobalType => $"(import \"{ModuleName}\" \"{ExportName}\" (global {GlobalType}))",
             _ => throw new ArgumentOutOfRangeException()
         };
     }
