@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using WasmLib;
 
@@ -20,7 +21,10 @@ namespace WasmTool
                 return;
             }
 
+            var sw = Stopwatch.StartNew();
             var wasmFile = WasmFile.Read(filename);
+            sw.Stop();
+            Console.WriteLine($"Read in {sw.Elapsed}");
 
             Console.WriteLine("wasm version: " + wasmFile.Version);
         }
