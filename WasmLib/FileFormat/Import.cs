@@ -7,8 +7,20 @@ namespace WasmLib.FileFormat
 {
     public class Import : IDeserializable
     {
-        public string ModuleName { get; private set; }
-        public string ExportName { get; private set; }
+        public string ModuleName
+        {
+            get => moduleName ?? throw new Exception($"Tried to read {nameof(ModuleName)} before it was assigned");
+            private set => moduleName = value;
+        }
+
+        public string ExportName
+        {
+            get => exportName ?? throw new Exception($"Tried to read {nameof(ExportName)} before it was assigned");
+            private set => exportName = value;
+        }
+
+        private string? moduleName, exportName;
+
         public ImportType Kind { get; private set; }
 
         /// <remarks> When <see cref="Kind"/> is <see cref="ImportType.TypeIndex"/> </remarks>
