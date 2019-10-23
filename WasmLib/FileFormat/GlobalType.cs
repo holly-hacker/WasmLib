@@ -5,8 +5,8 @@ namespace WasmLib.FileFormat
 {
     public struct GlobalType
     {
-        public bool Mutable { get; private set; }
-        public ValueKind ValueKind { get; private set; }
+        public bool Mutable { get; }
+        public ValueKind ValueKind { get; }
 
         public GlobalType(ValueKind valueKind, bool mutable)
         {

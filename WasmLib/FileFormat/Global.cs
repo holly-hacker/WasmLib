@@ -3,16 +3,19 @@ using WasmLib.Utils;
 
 namespace WasmLib.FileFormat
 {
-    public struct Global
+    public class Global
     {
-        public GlobalType GlobalType { get; private set; }
-        public byte[] Expression { get; private set; }
+        public GlobalType GlobalType => globalType ?? throw new UninitializedFieldException();
+        public byte[] Expression => expression ?? throw new UninitializedFieldException();
+
+        private GlobalType? globalType;
+        private byte[]? expression;
 
         public static Global Read(BinaryReader br)
         {
             return new Global {
-                GlobalType = GlobalType.Read(br),
-                Expression = br.ReadExpression()
+                globalType = GlobalType.Read(br),
+                expression = br.ReadExpression()
             };
         }
     }

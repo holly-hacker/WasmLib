@@ -7,16 +7,18 @@ namespace WasmLib.FileFormat
 {
     public class FunctionSignature : IDeserializable
     {
-        public ValueKind[] Parameters { get; private set; } = new ValueKind[0];
-        public ValueKind[] ReturnParameter { get; private set; } = new ValueKind[0];
+        public ValueKind[] Parameters => parameters ?? throw new UninitializedFieldException();
+        public ValueKind[] ReturnParameter => returnParameter ?? throw new UninitializedFieldException();
+
+        private ValueKind[]? parameters, returnParameter;
 
         public void Read(BinaryReader br)
         {
             var type = br.ReadByte();
             Debug.Assert(type == 0x60);
 
-            Parameters = br.ReadValueKindArray();
-            ReturnParameter = br.ReadValueKindArray();
+            parameters = br.ReadValueKindArray();
+            returnParameter = br.ReadValueKindArray();
             Debug.Assert(ReturnParameter.Length == 1, $"Only 1 return parameter is supported, found {ReturnParameter.Length} in {nameof(FunctionSignature)}");
         }
 

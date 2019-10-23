@@ -7,21 +7,12 @@ namespace WasmLib.FileFormat
 {
     public class Import : IDeserializable
     {
-        public string ModuleName
-        {
-            get => moduleName ?? throw new Exception($"Tried to read {nameof(ModuleName)} before it was assigned");
-            private set => moduleName = value;
-        }
-
-        public string ExportName
-        {
-            get => exportName ?? throw new Exception($"Tried to read {nameof(ExportName)} before it was assigned");
-            private set => exportName = value;
-        }
+        public string ModuleName => moduleName ?? throw new UninitializedFieldException();
+        public string ExportName => exportName ?? throw new UninitializedFieldException();
+        public ImportKind Kind => kind ?? throw new UninitializedFieldException();
 
         private string? moduleName, exportName;
-
-        public ImportKind Kind { get; private set; }
+        private ImportKind? kind;
 
         /// <remarks> When <see cref="Kind"/> is <see cref="ImportKind.TypeIndex"/> </remarks>
         public uint? SignatureIndex { get; private set; }
@@ -37,9 +28,9 @@ namespace WasmLib.FileFormat
 
         public void Read(BinaryReader br)
         {
-            ModuleName = br.ReadIdentifier();
-            ExportName = br.ReadIdentifier();
-            Kind = (ImportKind)br.ReadVarUint7();
+            moduleName = br.ReadIdentifier();
+            exportName = br.ReadIdentifier();
+            kind = (ImportKind)br.ReadVarUint7();
 
             switch (Kind) {
                 case ImportKind.TypeIndex:

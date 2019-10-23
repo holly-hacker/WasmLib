@@ -5,8 +5,8 @@ namespace WasmLib.FileFormat
 {
     public struct Limits
     {
-        public uint Min { get; private set; }
-        public uint? Max { get; private set; }
+        public uint Min { get; }
+        public uint? Max { get; }
 
         public Limits(uint min)
         {
