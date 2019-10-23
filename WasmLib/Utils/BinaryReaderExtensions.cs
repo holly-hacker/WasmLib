@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -41,7 +42,7 @@ namespace WasmLib.Utils
         {
             var arr = new T[br.ReadVarInt32()];
 
-            for (var i = 0; i < arr.Length; i++) {
+            for (int i = 0; i < arr.Length; i++) {
                 arr[i] = new T();
                 arr[i].Read(br);
             }
@@ -52,6 +53,31 @@ namespace WasmLib.Utils
         public static byte[] ReadWasmByteArray(this BinaryReader br) => br.ReadBytes(br.ReadVarInt32());
         public static WasmValueType[] ReadValueTypeArray(this BinaryReader br) => br.ReadBytes(br.ReadVarInt32()).Cast<WasmValueType>().ToArray();
 
+        public static uint[] ReadVarUint32Array(this BinaryReader br)
+        {
+            var arr = new uint[br.ReadVarInt32()];
+
+            for (int i = 0; i < arr.Length; i++) {
+                arr[i] = br.ReadVarUint32();
+            }
+
+            return arr;
+        }
+
         public static string ReadIdentifier(this BinaryReader br) => Encoding.UTF8.GetString(br.ReadWasmByteArray());
+
+        public static byte[] ReadExpression(this BinaryReader br)
+        {
+            // TODO: properly disassemble
+            // for now, just read until the next 0x0B byte, which represents the END opcode. This is not perfect as other instructions may contain it.
+            var list = new List<byte>();
+            byte b;
+            do {
+                b = br.ReadByte();
+                list.Add(b);
+            } while (b != 0x0B);
+
+            return list.ToArray();
+        }
     }
 }

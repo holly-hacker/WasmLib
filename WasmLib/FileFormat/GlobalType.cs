@@ -3,18 +3,18 @@ using WasmLib.Utils;
 
 namespace WasmLib.FileFormat
 {
-    public struct GlobalValue
+    public struct GlobalType
     {
         public bool Mutable { get; private set; }
         public WasmValueType ValueType { get; private set; }
 
-        public GlobalValue(WasmValueType valueType, bool mutable)
+        public GlobalType(WasmValueType valueType, bool mutable)
         {
             ValueType = valueType;
             Mutable = mutable;
         }
 
-        public static GlobalValue Read(BinaryReader br) => new GlobalValue((WasmValueType)br.ReadVarUint7(), br.ReadBoolean());
+        public static GlobalType Read(BinaryReader br) => new GlobalType((WasmValueType)br.ReadVarUint7(), br.ReadBoolean());
 
         public override string ToString() => Mutable ? $"mut {ValueType}" : $"{ValueType}";
     }

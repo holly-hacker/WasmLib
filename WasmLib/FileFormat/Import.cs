@@ -33,7 +33,7 @@ namespace WasmLib.FileFormat
         public Limits? MemorySize { get; private set; }
 
         /// <remarks> When <see cref="Kind"/> is <see cref="ImportType.GlobalType"/> </remarks>
-        public GlobalValue? GlobalType { get; private set; }
+        public GlobalType? GlobalType { get; private set; }
 
         public void Read(BinaryReader br)
         {
@@ -54,7 +54,7 @@ namespace WasmLib.FileFormat
                     MemorySize = Limits.Read(br);
                     break;
                 case ImportType.GlobalType:
-                    GlobalType = GlobalValue.Read(br);
+                    GlobalType = FileFormat.GlobalType.Read(br);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
