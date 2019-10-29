@@ -29,17 +29,23 @@ namespace WasmTool
             sw.Stop();
             Console.WriteLine($"Read in {sw.Elapsed}");
 
+            Console.WriteLine("wasm version: " + wasmFile.Version);
+
+            sw = Stopwatch.StartNew();
+            using var fs = File.Open("out.txt", FileMode.Create);
+            using var w = new StreamWriter(fs);
+            
             int index = 0;
             foreach (FunctionBody body in wasmFile.FunctionBodies.Take(20)) {
-                Console.WriteLine($"fun_{index++:X8}:");
+                w.WriteLine($"fun_{index++:X8}:");
                 foreach (Instruction instruction in body.Body) {
-                    Console.WriteLine("\t" + instruction);
+                    w.WriteLine("\t" + instruction);
                 }
 
-                Console.WriteLine();
+                w.WriteLine();
             }
-
-            Console.WriteLine("wasm version: " + wasmFile.Version);
+            sw.Stop();
+            Console.WriteLine($"Written to out.txt in {sw.Elapsed}");
         }
     }
 }
