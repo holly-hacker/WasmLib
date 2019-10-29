@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using WasmLib;
-using WasmLib.FileFormat;
-using WasmLib.FileFormat.Instructions;
+using WasmLib.Utils;
 
 namespace WasmTool
 {
@@ -34,16 +32,12 @@ namespace WasmTool
             sw = Stopwatch.StartNew();
             using var fs = File.Open("out.txt", FileMode.Create);
             using var w = new StreamWriter(fs);
-            
-            int index = 0;
-            foreach (FunctionBody body in wasmFile.FunctionBodies.Take(20)) {
-                w.WriteLine($"fun_{index++:X8}:");
-                foreach (Instruction instruction in body.Body) {
-                    w.WriteLine("\t" + instruction);
-                }
+            var dec = new SimpleDecompiler(wasmFile);
 
-                w.WriteLine();
+            for (int i = 0; i < Math.Min(wasmFile.FunctionBodies.Length, 20); i++) {
+                dec.DecompileFunction(w, i);
             }
+
             sw.Stop();
             Console.WriteLine($"Written to out.txt in {sw.Elapsed}");
         }
