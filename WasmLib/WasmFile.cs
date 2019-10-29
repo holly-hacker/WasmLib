@@ -36,7 +36,7 @@ namespace WasmLib
             using (var br = new BinaryReader(stream, Encoding.UTF8, true)) {
                 var magic = br.ReadBytes(4);
                 if (!magic.SequenceEqual(Encoding.ASCII.GetBytes("\0asm"))) {
-                    throw new Exception("Invalid magic, expected ''\\0asm'");
+                    throw new Exception("Invalid magic, expected '\\0asm'");
                 }
 
                 file.Version = br.ReadInt32();
