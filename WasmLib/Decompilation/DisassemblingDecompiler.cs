@@ -2,16 +2,13 @@ using System;
 using System.IO;
 using WasmLib.FileFormat.Instructions;
 
-namespace WasmLib.Utils
+namespace WasmLib.Decompilation
 {
-    /// <remarks>
-    /// TODO: move to a proper decompiler class
-    /// </remarks>
-    public class SimpleDecompiler
+    public class DisassemblingDecompiler : IDecompiler
     {
         public WasmFile WasmFile { get; private set; }
 
-        public SimpleDecompiler(WasmFile wasmFile)
+        public DisassemblingDecompiler(WasmFile wasmFile)
         {
             WasmFile = wasmFile;
         }
@@ -21,11 +18,11 @@ namespace WasmLib.Utils
             var function = WasmFile.FunctionBodies[functionIndex];
             int indent = 1;
 
-            output.WriteLine($"fun_{functionIndex:X8}:");
+            output.WriteLine($"fun_{functionIndex:X8}: # {WasmFile.FunctionTypes[WasmFile.Functions[functionIndex]]}");
             foreach (var instruction in function.Body)
             {
                 indent += instruction.Opcode switch {
-                    InstructionKind.Else => -1, // temporarily
+                    InstructionKind.Else => -1, // temporary
                     InstructionKind.End => -1,
                     _ => 0,
                 };

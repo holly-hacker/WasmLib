@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using WasmLib;
-using WasmLib.Utils;
+using WasmLib.Decompilation;
 
 namespace WasmTool
 {
@@ -32,9 +32,9 @@ namespace WasmTool
             sw = Stopwatch.StartNew();
             using var fs = File.Open("out.txt", FileMode.Create);
             using var w = new StreamWriter(fs);
-            var dec = new SimpleDecompiler(wasmFile);
+            IDecompiler dec = new DisassemblingDecompiler(wasmFile);
 
-            for (int i = 0; i < Math.Min(wasmFile.FunctionBodies.Length, 20); i++) {
+            for (int i = 0; i < Math.Min(wasmFile.FunctionBodies.Length, 2000); i++) {
                 dec.DecompileFunction(w, i);
             }
 
