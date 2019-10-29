@@ -26,6 +26,7 @@ namespace WasmLib.FileFormat.Instructions
                 case OperandKind.BrTableOperand:
                     return $"{opcodeString} {string.Join("-", ((uint[])operandObject!).Select(x => $"0x{x:X}"))} 0x{operand:x}";
                 case OperandKind.BlockType:
+                    return $"{opcodeString} {(ValueKind)operand}";
                 case OperandKind.LabelIndex:
                 case OperandKind.FuncIndex:
                 case OperandKind.IndirectCallTypeIndex:
