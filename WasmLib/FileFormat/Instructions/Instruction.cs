@@ -7,30 +7,9 @@ namespace WasmLib.FileFormat.Instructions
     {
         public InstructionKind Opcode { get; private set; }
         private ulong operand;
-        private object? operandObject;
+        private object? operandObject; // NOTE: this is only ever a uint[], could be specified
 
-        public Instruction(InstructionKind opcode)
-        {
-            Opcode = opcode;
-            operand = 0;
-            operandObject = null;
-        }
-
-        public Instruction(InstructionKind opcode, ulong operand)
-        {
-            Opcode = opcode;
-            this.operand = operand;
-            operandObject = null;
-        }
-
-        public Instruction(InstructionKind opcode, object operandObject)
-        {
-            Opcode = opcode;
-            operand = 0;
-            this.operandObject = operandObject;
-        }
-
-        public Instruction(InstructionKind opcode, ulong operand, object operandObject)
+        public Instruction(InstructionKind opcode, ulong operand = 0, object? operandObject = null)
         {
             Opcode = opcode;
             this.operand = operand;
