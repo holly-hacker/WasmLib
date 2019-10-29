@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using WasmLib;
+using WasmLib.FileFormat;
+using WasmLib.FileFormat.Instructions;
 
 namespace WasmTool
 {
@@ -25,6 +28,16 @@ namespace WasmTool
             var wasmFile = WasmFile.Read(filename);
             sw.Stop();
             Console.WriteLine($"Read in {sw.Elapsed}");
+
+            int index = 0;
+            foreach (FunctionBody body in wasmFile.FunctionBodies.Take(20)) {
+                Console.WriteLine($"fun_{index++:X8}:");
+                foreach (Instruction instruction in body.Body) {
+                    Console.WriteLine("\t" + instruction);
+                }
+
+                Console.WriteLine();
+            }
 
             Console.WriteLine("wasm version: " + wasmFile.Version);
         }
