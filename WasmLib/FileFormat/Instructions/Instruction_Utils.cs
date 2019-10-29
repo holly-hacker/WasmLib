@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 
@@ -6,19 +7,30 @@ namespace WasmLib.FileFormat.Instructions
 {
     public partial struct Instruction
     {
+        private static readonly Dictionary<InstructionKind, string> OpcodeNameCache = new Dictionary<InstructionKind, string>();
+        
         public static string GetOpcodeName(InstructionKind instruction)
         {
+            if (OpcodeNameCache.TryGetValue(instruction, out var ret)) {
+                return ret;
+            }
+            
             var name = Enum.GetName(typeof(InstructionKind), instruction);
 
             if (name is null) {
                 return instruction.ToString();
             }
 
-            return typeof(InstructionKind)
-                       .GetField(name)?
-                       .GetCustomAttribute<DescriptionAttribute>()?
-                       .Description ?? instruction.ToString();
+            var description = typeof(InstructionKind)
+                                  .GetField(name)?
+                                  .GetCustomAttribute<DescriptionAttribute>()?
+                                  .Description;
 
+            if (description is null) {
+                return instruction.ToString();
+            }
+
+            return OpcodeNameCache[instruction] = description;
         }
         
         public static OperandKind GetOperandKind(InstructionKind instr)
