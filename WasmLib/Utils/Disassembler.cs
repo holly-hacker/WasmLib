@@ -56,9 +56,9 @@ namespace WasmLib.Utils
                 case OperandKind.ImmediateI64:
                     return new Instruction(opcode, br.ReadVarUint64());
                 case OperandKind.ImmediateF32:
-                    return new Instruction(opcode, BitConverter.SingleToInt32Bits(br.ReadSingle()));
+                    return new Instruction(opcode, (ulong)BitConverter.SingleToInt32Bits(br.ReadSingle()));
                 case OperandKind.ImmediateF64:
-                    return new Instruction(opcode, BitConverter.DoubleToInt64Bits(br.ReadDouble()));
+                    return new Instruction(opcode, (ulong)BitConverter.DoubleToInt64Bits(br.ReadDouble()));
                 default:
                     throw new ArgumentOutOfRangeException();
             }
