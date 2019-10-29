@@ -26,7 +26,7 @@ namespace WasmLib.Utils
 
             for (int i = 0; i < 5; i++) {
                 byte read = br.ReadByte();
-                ret |= (uint)((read & 0x7f) << (i * 7));
+                ret |= (read & 0x7Fu) << (i * 7);
 
                 if ((read & 0x80) == 0) {
                     return ret;
@@ -42,7 +42,7 @@ namespace WasmLib.Utils
 
             for (int i = 0; i < 10; i++) {
                 byte read = br.ReadByte();
-                ret |= (ulong)((read & 0x7f) << (i * 7));
+                ret |= (read & 0x7Fu) << (i * 7);
 
                 if ((read & 0x80) == 0) {
                     return ret;
