@@ -1,7 +1,26 @@
+using System;
+using System.ComponentModel;
+using System.Reflection;
+
 namespace WasmLib.FileFormat.Instructions
 {
     public partial struct Instruction
     {
+        public static string GetOpcodeName(InstructionKind instruction)
+        {
+            var name = Enum.GetName(typeof(InstructionKind), instruction);
+
+            if (name is null) {
+                return instruction.ToString();
+            }
+
+            return typeof(InstructionKind)
+                       .GetField(name)?
+                       .GetCustomAttribute<DescriptionAttribute>()?
+                       .Description ?? instruction.ToString();
+
+        }
+        
         public static OperandKind GetOperandKind(InstructionKind instr)
         {
             switch (instr) {
