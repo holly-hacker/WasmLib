@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using WasmLib.Utils;
+using WasmLib.FileFormat.Instructions;
 
-namespace WasmLib.FileFormat.Instructions
+namespace WasmLib.Utils
 {
     public static class Disassembler
     {
