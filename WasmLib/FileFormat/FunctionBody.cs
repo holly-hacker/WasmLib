@@ -10,7 +10,7 @@ namespace WasmLib.FileFormat
     public class FunctionBody : IDeserializable
     {
         public ValueKind[] Locals => locals ?? throw new UninitializedFieldException();
-        public Instruction[] Body => body ?? throw new UninitializedFieldException();
+        public Instruction[] Instructions => body ?? throw new UninitializedFieldException();
 
         private ValueKind[]? locals;
         private Instruction[]? body;

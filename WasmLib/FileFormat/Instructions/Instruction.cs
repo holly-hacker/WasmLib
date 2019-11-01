@@ -6,28 +6,28 @@ namespace WasmLib.FileFormat.Instructions
 {
     public partial struct Instruction
     {
-        public InstructionKind Opcode { get; private set; }
+        public InstructionKind OpCode { get; private set; }
 
-        private ulong operand;
-        private object? operandObject; // NOTE: this is only ever a uint[], could be specified
+        private readonly ulong operand;
+        private readonly object? operandObject; // NOTE: this is only ever a uint[], could be specified
 
         public uint UIntOperand => (uint)operand;
         public int IntOperand => (int)operand;
         public ulong ULongOperand => operand;
         public long LongOperand => (long)operand;
 
-        public Instruction(InstructionKind opcode, ulong operand = 0, object? operandObject = null)
+        public Instruction(InstructionKind opCode, ulong operand = 0, object? operandObject = null)
         {
-            Opcode = opcode;
+            OpCode = opCode;
             this.operand = operand;
             this.operandObject = operandObject;
         }
 
         public override string ToString()
         {
-            var opcodeString = EnumUtils.GetDescription(Opcode);
+            var opcodeString = EnumUtils.GetDescription(OpCode);
             
-            switch (GetOperandKind(Opcode)) {
+            switch (GetOperandKind(OpCode)) {
                 case OperandKind.None:
                     return opcodeString;
                 case OperandKind.BrTableOperand:

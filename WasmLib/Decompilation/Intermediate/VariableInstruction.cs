@@ -14,7 +14,7 @@ namespace WasmLib.Decompilation.Intermediate
 
         public VariableInstruction(in Instruction instruction)
         {
-            (Target, Action) = instruction.Opcode switch {
+            (Target, Action) = instruction.OpCode switch {
                 InstructionKind.LocalGet => (TargetKind.Local, ActionKind.Get),
                 InstructionKind.LocalSet => (TargetKind.Local, ActionKind.Set),
                 InstructionKind.LocalTee => (TargetKind.Local, ActionKind.Tee),

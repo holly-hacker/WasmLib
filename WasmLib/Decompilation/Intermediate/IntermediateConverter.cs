@@ -16,7 +16,7 @@ namespace WasmLib.Decompilation.Intermediate
 
         public IEnumerable<IntermediateInstruction> Convert()
         {
-            for (int i = 0; i < function.Body.Length - 1; i++) { // 1 less for `end` instruction
+            for (int i = 0; i < function.Instructions.Length - 1; i++) { // 1 less for `end` instruction
                 IntermediateInstruction? instruction = ReadInstruction(ref i);
 
                 if (instruction != null) {
@@ -27,9 +27,9 @@ namespace WasmLib.Decompilation.Intermediate
 
         private IntermediateInstruction? ReadInstruction(ref int i)
         {
-            var instruction = function.Body[i];
+            var instruction = function.Instructions[i];
             
-            switch (instruction.Opcode) {
+            switch (instruction.OpCode) {
                 case InstructionKind.Unreachable:
                     throw new NotImplementedException();
                 case InstructionKind.Nop:
@@ -75,7 +75,7 @@ namespace WasmLib.Decompilation.Intermediate
                     return new BinaryOperationInstruction(instruction);
 
                 default:
-                    throw new NotImplementedException($"Unimplemented instruction {function.Body[i]}");
+                    throw new NotImplementedException($"Unimplemented instruction {instruction}");
             }
         }
     }

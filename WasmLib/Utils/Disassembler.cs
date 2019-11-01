@@ -21,7 +21,7 @@ namespace WasmLib.Utils
             Instruction instr;
             do {
                 yield return instr = DisassembleInstruction(br);
-            } while (instr.Opcode != InstructionKind.End);
+            } while (instr.OpCode != InstructionKind.End);
         }
 
         public static Instruction DisassembleInstruction(BinaryReader br)

@@ -13,7 +13,7 @@ namespace WasmLib.Decompilation.Intermediate
         
         public BinaryOperationInstruction(Instruction instruction)
         {
-            (Type, Operation) = instruction.Opcode switch {
+            (Type, Operation) = instruction.OpCode switch {
                 // both
                 InstructionKind.I32Add => (ValueKind.I32, OperationKind.Add),
                 InstructionKind.I64Add => (ValueKind.I64, OperationKind.Add),

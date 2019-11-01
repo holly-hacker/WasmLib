@@ -12,7 +12,7 @@ namespace WasmLib.Decompilation.Intermediate
         
         public ConstInstruction(Instruction instruction)
         {
-            Type = instruction.Opcode switch {
+            Type = instruction.OpCode switch {
                 InstructionKind.I32Const => ValueKind.I32,
                 InstructionKind.I64Const => ValueKind.I64,
                 InstructionKind.F32Const => ValueKind.F32,

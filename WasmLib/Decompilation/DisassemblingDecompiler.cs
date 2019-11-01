@@ -19,9 +19,9 @@ namespace WasmLib.Decompilation
             int indent = 1;
 
             output.WriteLine($"fun_{functionIndex:X8}: # {WasmFile.FunctionTypes[WasmFile.Functions[functionIndex]]}");
-            foreach (var instruction in function.Body)
+            foreach (var instruction in function.Instructions)
             {
-                indent += instruction.Opcode switch {
+                indent += instruction.OpCode switch {
                     InstructionKind.Else => -1, // temporary
                     InstructionKind.End => -1,
                     _ => 0,
@@ -29,7 +29,7 @@ namespace WasmLib.Decompilation
                 
                 output.WriteLine(new string('\t', indent) + instruction);
                 
-                indent += instruction.Opcode switch {
+                indent += instruction.OpCode switch {
                     InstructionKind.Block => 1,
                     InstructionKind.Loop => 1,
                     InstructionKind.If => 1,

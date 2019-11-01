@@ -11,7 +11,7 @@ namespace WasmLib.Decompilation.Intermediate
 
         public MemorySizeInstruction(in Instruction instruction)
         {
-            Kind = instruction.Opcode switch {
+            Kind = instruction.OpCode switch {
                 InstructionKind.MemorySize => OpCodeKind.Size,
                 InstructionKind.MemoryGrow => OpCodeKind.Grow,
                 _ => throw new WrongInstructionPassedException(instruction, nameof(MemorySizeInstruction)),
