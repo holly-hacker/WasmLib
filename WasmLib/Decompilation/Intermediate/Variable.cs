@@ -1,4 +1,5 @@
 using WasmLib.FileFormat;
+using WasmLib.Utils;
 
 namespace WasmLib.Decompilation.Intermediate
 {
@@ -12,6 +13,6 @@ namespace WasmLib.Decompilation.Intermediate
             index = index,
         };
 
-        public override string ToString() => $"var_{index}_{Type}";
+        public override string ToString() => $"var{index}_{EnumUtils.GetDescription(Type)}";
     }
 }

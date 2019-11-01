@@ -22,7 +22,7 @@ namespace WasmLib.FileFormat
             Debug.Assert(ReturnParameter.Length <= 1, $"Only 1 return parameter is supported, found {ReturnParameter.Length} in {nameof(FunctionSignature)}");
         }
 
-        public override string ToString() => $"{(ReturnParameter.Any() ? ReturnParameter[0].ToString() : "void")}({string.Join(", ", Parameters.Select(x => x.ToString()))})";
-        public string ToString(string functionName) => $"{(ReturnParameter.Any() ? ReturnParameter[0].ToString() : "void")} {functionName}({string.Join(", ", Parameters.Select(x => x.ToString()))})";
+        public override string ToString() => $"{(ReturnParameter.Any() ? EnumUtils.GetDescription(ReturnParameter[0]) : "void")}({string.Join(", ", Parameters.Select(EnumUtils.GetDescription))})";
+        public string ToString(string functionName) => $"{(ReturnParameter.Any() ? EnumUtils.GetDescription(ReturnParameter[0]) : "void")} {functionName}({string.Join(", ", Parameters.Select(EnumUtils.GetDescription))})";
     }
 }

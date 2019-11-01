@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Reflection;
 using WasmLib.FileFormat;
 using WasmLib.FileFormat.Instructions;
 using WasmLib.Utils;
@@ -11,8 +8,6 @@ namespace WasmLib.Decompilation.Intermediate
 {
     public class BinaryOperationInstruction : IntermediateInstruction
     {
-        private static readonly Dictionary<OperationKind, string> OperationStringCache = new Dictionary<OperationKind, string>();
-        
         public ValueKind Type { get; }
         public OperationKind Operation { get; }
         
@@ -50,31 +45,7 @@ namespace WasmLib.Decompilation.Intermediate
 
             var pushed = context.Push(Type);
             
-            context.WriteFull($"{pushed} = {popped1} {GetOperationString(Operation)} {popped2}");
-        }
-
-        private static string GetOperationString(OperationKind op) // TODO: this is duplicated in Instruction_Utils.cs, move it to a utility method
-        {
-            if (OperationStringCache.TryGetValue(op, out string? s)) {
-                return s!;
-            }
-            
-            var name = Enum.GetName(typeof(OperationKind), op);
-
-            if (name is null) {
-                return op.ToString();
-            }
-
-            var description = typeof(OperationKind)
-                .GetField(name)?
-                .GetCustomAttribute<DescriptionAttribute>()?
-                .Description;
-
-            if (description is null) {
-                return op.ToString();
-            }
-
-            return OperationStringCache[op] = description;
+            context.WriteFull($"{pushed} = {popped1} {EnumUtils.GetDescription(Operation)} {popped2}");
         }
 
         public enum OperationKind

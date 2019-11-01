@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using WasmLib.Utils;
 
 namespace WasmLib.FileFormat.Instructions
 {
@@ -24,7 +25,7 @@ namespace WasmLib.FileFormat.Instructions
 
         public override string ToString()
         {
-            var opcodeString = GetOpcodeName(Opcode);
+            var opcodeString = EnumUtils.GetDescription(Opcode);
             
             switch (GetOperandKind(Opcode)) {
                 case OperandKind.None:
