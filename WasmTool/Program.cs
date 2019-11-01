@@ -32,9 +32,9 @@ namespace WasmTool
             sw = Stopwatch.StartNew();
             using var fs = File.Open("out.txt", FileMode.Create);
             using var w = new StreamWriter(fs);
-            IDecompiler dec = new DisassemblingDecompiler(wasmFile);
+            IDecompiler dec = new IntermediateRepresentationDecompiler(wasmFile);
 
-            for (int i = 0; i < Math.Min(wasmFile.FunctionBodies.Length, 2000); i++) {
+            for (int i = 0; i < Math.Min(wasmFile.FunctionBodies.Length, 5); i++) { // first 5 instructions in test data should be parseable
                 dec.DecompileFunction(w, i);
             }
 

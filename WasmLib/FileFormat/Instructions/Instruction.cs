@@ -6,8 +6,14 @@ namespace WasmLib.FileFormat.Instructions
     public partial struct Instruction
     {
         public InstructionKind Opcode { get; private set; }
+
         private ulong operand;
         private object? operandObject; // NOTE: this is only ever a uint[], could be specified
+
+        public uint UIntOperand => (uint)operand;
+        public int IntOperand => (int)operand;
+        public ulong ULongOperand => operand;
+        public long LongOperand => (long)operand;
 
         public Instruction(InstructionKind opcode, ulong operand = 0, object? operandObject = null)
         {

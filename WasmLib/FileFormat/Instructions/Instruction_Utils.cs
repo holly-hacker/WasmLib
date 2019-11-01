@@ -11,8 +11,8 @@ namespace WasmLib.FileFormat.Instructions
         
         public static string GetOpcodeName(InstructionKind instruction)
         {
-            if (OpcodeNameCache.TryGetValue(instruction, out var ret)) {
-                return ret;
+            if (OpcodeNameCache.TryGetValue(instruction, out string? ret)) {
+                return ret!;
             }
             
             var name = Enum.GetName(typeof(InstructionKind), instruction);

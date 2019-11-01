@@ -60,6 +60,7 @@ namespace WasmLib.FileFormat.Instructions
         [Description("i64.store8")] I64Store8S = 0x3C,
         [Description("i64.store16")] I64Store16S = 0x3D,
         [Description("i64.store32")] I64Store32S = 0x3E,
+
         [Description("memory.size")] MemorySize = 0x3F,
         [Description("memory.grow")] MemoryGrow = 0x40,
 

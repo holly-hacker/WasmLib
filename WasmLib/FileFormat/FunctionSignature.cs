@@ -23,5 +23,6 @@ namespace WasmLib.FileFormat
         }
 
         public override string ToString() => $"{(ReturnParameter.Any() ? ReturnParameter[0].ToString() : "void")}({string.Join(", ", Parameters.Select(x => x.ToString()))})";
+        public string ToString(string functionName) => $"{(ReturnParameter.Any() ? ReturnParameter[0].ToString() : "void")} {functionName}({string.Join(", ", Parameters.Select(x => x.ToString()))})";
     }
 }
