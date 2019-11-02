@@ -34,7 +34,7 @@ namespace WasmTool
             using var w = new StreamWriter(fs);
             IDecompiler dec = new IntermediateRepresentationDecompiler(wasmFile);
 
-            for (int i = 0; i < Math.Min(wasmFile.FunctionBodies.Length, 5); i++) { // first 5 instructions in test data should be parseable
+            for (int i = 0; i < Math.Min(wasmFile.FunctionBodies.Length, 8); i++) {
                 dec.DecompileFunction(w, i);
             }
 

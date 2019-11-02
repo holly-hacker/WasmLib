@@ -58,6 +58,14 @@ namespace WasmLib.Decompilation.Intermediate
 
         public ValueKind GetGlobalType(uint i) => Globals[(int)i];
 
+        public void Indent() => Indentation++;
+        
+        public void DeIndent()
+        {
+            Indentation--;
+            Debug.Assert(Indentation >= 0, "Tried to set indentation lower than zero");
+        }
+
         public void WriteFull(string s)
         {
             // NOTE: can split these up if needed for performance reasons (eg. to prevent string interp/concat on caller side)

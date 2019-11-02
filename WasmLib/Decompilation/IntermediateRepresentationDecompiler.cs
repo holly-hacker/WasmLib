@@ -22,7 +22,7 @@ namespace WasmLib.Decompilation
             
             // get IR
             var context = new IntermediateContext(body, signature, WasmFile, output);
-            IEnumerable<IntermediateInstruction> instructions = new IntermediateConverter(body).Convert();
+            List<IntermediateInstruction> instructions = new IntermediateConverter(body).Convert();
 
             output.Write(signature.ToString($"fun_{functionIndex:X8}"));
             output.WriteLine(" {");

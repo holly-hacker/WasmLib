@@ -60,11 +60,11 @@ namespace WasmLib.FileFormat.Instructions
                 case InstructionKind.I64Store:
                 case InstructionKind.F32Store:
                 case InstructionKind.F64Store:
-                case InstructionKind.I32Store8S:
-                case InstructionKind.I32Store16S:
-                case InstructionKind.I64Store8S:
-                case InstructionKind.I64Store16S:
-                case InstructionKind.I64Store32S:
+                case InstructionKind.I32Store8:
+                case InstructionKind.I32Store16:
+                case InstructionKind.I64Store8:
+                case InstructionKind.I64Store16:
+                case InstructionKind.I64Store32:
                     return OperandKind.MemArg;
 
                 case InstructionKind.MemorySize:
