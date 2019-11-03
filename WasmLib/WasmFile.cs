@@ -20,6 +20,8 @@ namespace WasmLib
         public Element[] Elements { get; private set; } = new Element[0];
         public FunctionBody[] FunctionBodies { get; private set; } = new FunctionBody[0];
         public DataSegment[] DataSegments { get; private set; } = new DataSegment[0];
+        
+        public int ImportedFunctionCount { get; private set; }
 
         private WasmFile() { }
 
@@ -84,6 +86,8 @@ namespace WasmLib
                     Debug.Assert(oldPos + size == stream.Position, $"Section size was {size}, but read {stream.Position - oldPos} bytes");
                 }
             }
+
+            file.ImportedFunctionCount = file.Imports.Count(x => x.Kind == ImportKind.TypeIndex);
 
             return file;
         }

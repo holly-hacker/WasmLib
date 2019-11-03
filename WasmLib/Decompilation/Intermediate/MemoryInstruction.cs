@@ -52,19 +52,28 @@ namespace WasmLib.Decompilation.Intermediate
 
         public override void Handle(ref IntermediateContext context)
         {
-            var param = Action == ActionKind.Load ? context.Push(Type) : context.Pop();
-            Debug.Assert(param.Type == Type);
-
-            string typeString = EnumUtils.GetDescription(Type);
-
-            string deref = $"*({typeString}*)0x{Offset:x8}";
-            
             // TODO: Casting
             if (Action == ActionKind.Load && Casting != CastingKind.Same) {
                 context.WriteFull($"// DECOMPILER WARNING: casting of type {Casting}");
             }
             
-            context.WriteFull(Action == ActionKind.Load ? $"{param} = {deref}" : $"{deref} = {param}");
+            Variable param = default;
+
+            if (Action == ActionKind.Store) {
+                param = context.Pop();
+                Debug.Assert(param.Type == Type);
+            }
+
+            var popped = context.Pop();
+            Debug.Assert(popped.Type == ValueKind.I32);
+
+            if (Action == ActionKind.Load) {
+                param = context.Push(Type);
+            }
+
+            string dereference = $"*({EnumUtils.GetDescription(Type)}*)({popped} + 0x{Offset:X})"; // NOTE: could be optimized
+            
+            context.WriteFull($"{(Action == ActionKind.Load ? $"{param} = {dereference}" : $"{dereference} = {param}")} // Alignment: 0x{1 << (int)Alignment:X}");
         }
 
         public enum ActionKind

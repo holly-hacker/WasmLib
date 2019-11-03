@@ -22,7 +22,7 @@ namespace WasmLib.Decompilation
             
             // get IR
             var context = new IntermediateContext(body, signature, WasmFile, output);
-            List<IntermediateInstruction> instructions = new IntermediateConverter(body).Convert();
+            List<IntermediateInstruction> instructions = new IntermediateConverter(WasmFile, body).Convert();
 
             output.Write(signature.ToString($"fun_{functionIndex:X8}"));
             output.WriteLine(" {");
@@ -41,6 +41,11 @@ namespace WasmLib.Decompilation
 
             if (context.Indentation != 0) {
                 throw new Exception("Function body has unbalanced indentation");
+            }
+
+            if (context.Stack.Count != 0) {
+                // throw new Exception($"Unbalanced stack, found {context.Stack.Count} remaining values");
+                Console.WriteLine($"Unbalanced stack, found {context.Stack.Count} remaining values");
             }
             
             output.WriteLine();

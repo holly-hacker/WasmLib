@@ -8,10 +8,12 @@ namespace WasmLib.Decompilation.Intermediate
 {
     public class IntermediateConverter
     {
+        private readonly WasmFile wasmFile;
         private readonly FunctionBody function;
 
-        public IntermediateConverter(FunctionBody function)
+        public IntermediateConverter(WasmFile wasmFile, FunctionBody function)
         {
+            this.wasmFile = wasmFile;
             this.function = function;
         }
 
@@ -64,7 +66,7 @@ namespace WasmLib.Decompilation.Intermediate
             throw new IndexOutOfRangeException("Tried to read past end of function body, is the `end` instruction missing?");
         }
 
-        public static IntermediateInstruction? ConvertInstruction(Instruction instruction)
+        public IntermediateInstruction? ConvertInstruction(Instruction instruction)
         {
             switch (instruction.OpCode) {
                 case InstructionKind.Unreachable:
@@ -79,6 +81,11 @@ namespace WasmLib.Decompilation.Intermediate
                 case InstructionKind.Else:
                 case InstructionKind.End:
                     throw new Exception($"Encountered unexpected control flow instruction '{instruction}'");
+                
+                case InstructionKind.Call:
+                    return new CallInstruction(wasmFile, instruction);
+                case InstructionKind.CallIndirect:
+                    throw new NotImplementedException();
                 
                 case InstructionKind.Drop:
                     return new DropInstruction();
