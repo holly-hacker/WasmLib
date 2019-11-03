@@ -82,10 +82,11 @@ namespace WasmLib.Decompilation.Intermediate
                 case InstructionKind.End:
                     throw new Exception($"Encountered unexpected control flow instruction '{instruction}'");
                 
+                case InstructionKind.Return:
+                    return new ReturnInstruction();
                 case InstructionKind.Call:
-                    return new CallInstruction(wasmFile, instruction);
                 case InstructionKind.CallIndirect:
-                    throw new NotImplementedException();
+                    return new CallInstruction(wasmFile, instruction);
                 
                 case InstructionKind.Drop:
                     return new DropInstruction();
@@ -148,10 +149,63 @@ namespace WasmLib.Decompilation.Intermediate
                 case InstructionKind.F64Mul:
                     
                 case InstructionKind.I32And:
-                case InstructionKind.I64And: // TODO: others
+                case InstructionKind.I64And:
+                case InstructionKind.I32Or:
+                case InstructionKind.I64Or:
+                case InstructionKind.I32Xor:
+                case InstructionKind.I64Xor:
+                case InstructionKind.I32Shl:
+                case InstructionKind.I64Shl:
+                case InstructionKind.I32ShrS:
+                case InstructionKind.I64ShrS:
+                case InstructionKind.I32ShrU:
+                case InstructionKind.I64ShrU:
+                case InstructionKind.I32Rotl:
+                case InstructionKind.I64Rotl:
+                case InstructionKind.I32Rotr:
+                case InstructionKind.I64Rotr:
                     return new BinaryOperationInstruction(instruction);
+
+
+                case InstructionKind.I32Eq:
+                case InstructionKind.I32Ne:
+                case InstructionKind.I32LtS:
+                case InstructionKind.I32LtU:
+                case InstructionKind.I32GtS:
+                case InstructionKind.I32GtU:
+                case InstructionKind.I32LeS:
+                case InstructionKind.I32LeU:
+                case InstructionKind.I32GeS:
+                case InstructionKind.I32GeU:
+
+                case InstructionKind.I64Eq:
+                case InstructionKind.I64Ne:
+                case InstructionKind.I64LtS:
+                case InstructionKind.I64LtU:
+                case InstructionKind.I64GtS:
+                case InstructionKind.I64GtU:
+                case InstructionKind.I64LeS:
+                case InstructionKind.I64LeU:
+                case InstructionKind.I64GeS:
+                case InstructionKind.I64GeU:
+
+                case InstructionKind.F32Eq:
+                case InstructionKind.F32Ne:
+                case InstructionKind.F32Lt:
+                case InstructionKind.F32Gt:
+                case InstructionKind.F32Le:
+                case InstructionKind.F32Ge:
+
+                case InstructionKind.F64Eq:
+                case InstructionKind.F64Ne:
+                case InstructionKind.F64Lt:
+                case InstructionKind.F64Gt:
+                case InstructionKind.F64Le:
+                case InstructionKind.F64Ge:
+                return new ComparisonOperationInstruction(instruction);
                 
                 case InstructionKind.I32Eqz:
+                case InstructionKind.I64Eqz:
                     return new TestOperationInstruction(instruction);
 
                 default:

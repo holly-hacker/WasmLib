@@ -15,6 +15,7 @@ namespace WasmLib.Decompilation.Intermediate
         {
             (Type, Operation) = instruction.OpCode switch {
                 InstructionKind.I32Eqz => (ValueKind.I32, OperationKind.Eqz),
+                InstructionKind.I64Eqz => (ValueKind.I64, OperationKind.Eqz),
                 _ => throw new WrongInstructionPassedException(instruction, nameof(VariableInstruction)),
             };
         }

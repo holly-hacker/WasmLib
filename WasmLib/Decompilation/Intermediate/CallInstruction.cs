@@ -9,26 +9,39 @@ namespace WasmLib.Decompilation.Intermediate
 {
     public class CallInstruction : IntermediateInstruction
     {
-        public string Name { get; }
+        public string? Name { get; private set; }
+        public bool IsIndirect { get; }
         public FunctionSignature Signature { get; }
         
         public CallInstruction(WasmFile file, Instruction instruction)
         {
-            if (instruction.OpCode != InstructionKind.Call) {
+            uint index = instruction.UIntOperand;
+
+            if (instruction.OpCode == InstructionKind.Call) {
+                IsIndirect = false;
+                Name = "fun_" + index.ToString("X8");
+
+                // skipping signatures for imported functions
+                Signature = file.FunctionTypes[file.Functions[index - file.ImportedFunctionCount]];
+            }
+            else if (instruction.OpCode == InstructionKind.CallIndirect) {
+                IsIndirect = true;
+                Signature = file.FunctionTypes[index];
+            }
+            else {
                 throw new WrongInstructionPassedException(instruction, nameof(CallInstruction));
             }
-
-            uint index = instruction.UIntOperand;
-            Name = "fun_" + index.ToString("X8");
-
-            // skipping signatures for imported functions
-            Signature = file.FunctionTypes[file.Functions[index - file.ImportedFunctionCount]];
         }
         
         public override void Handle(ref IntermediateContext context)
         {
             if (Signature.ReturnParameter.Length > 1) {
                 throw new Exception("Not implemented");
+            }
+
+            if (IsIndirect) {
+                // could be resolved if we know this value
+                Name = $"ELEM[{context.Pop()}]";
             }
             
             var paramList = new List<Variable>();

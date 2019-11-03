@@ -13,6 +13,7 @@ namespace WasmLib.Decompilation.Intermediate
         public IReadOnlyList<ValueKind> Locals { get; }
         public IReadOnlyList<ValueKind> Globals { get; }
         public FunctionSignature Signature { get; }
+        public WasmFile WasmFile { get; }
         private readonly StreamWriter streamWriter;
         
         public Stack<Variable> Stack { get; }
@@ -23,6 +24,8 @@ namespace WasmLib.Decompilation.Intermediate
             Indentation = 0;
             Locals = signature.Parameters.Concat(function.Locals).ToList();
             Signature = signature;
+            WasmFile = wasmFile;
+
             var importGlobals = wasmFile.Imports
                 .Where(x => x.Kind == ImportKind.GlobalType)
                 .Select(x =>
