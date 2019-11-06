@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using WasmLib.FileFormat;
 using WasmLib.FileFormat.Instructions;
 using WasmLib.Utils;
@@ -31,8 +31,10 @@ namespace WasmLib.Decompilation.Intermediate
         
         public override void Handle(ref IntermediateContext context)
         {
-            if (ValueKind != ValueKind.Empty) {
-                throw new NotImplementedException();
+            bool hasReturn = ValueKind != ValueKind.Empty;
+
+            if (hasReturn) {
+                Debug.Assert(Kind == ControlBlockKind.If);
             }
 
             string keyword = EnumUtils.GetDescription(Kind);
@@ -42,23 +44,39 @@ namespace WasmLib.Decompilation.Intermediate
                 keyword += " " + popped;
             }
             
-            context.WriteFull($"{keyword} {{");
-            context.Indent();
-            foreach (IntermediateInstruction instruction in Block1) {
-                instruction.Handle(ref context);
+            if (hasReturn) {
+                var pushed = context.Push(ValueKind);
+                context.WriteFull($"{pushed} = {keyword} {{");
             }
-            context.DeIndent();
+            else {
+                context.WriteFull($"{keyword} {{");
+            }
+            
+            HandleBlock(ref context, Block1, hasReturn);
 
             if (Kind == ControlBlockKind.If && Block2 != null) {
                 context.WriteFull("} else {");
-                
-                context.Indent();
-                foreach (IntermediateInstruction instruction in Block2) {
-                    instruction.Handle(ref context);
-                }
-                context.DeIndent();
+                HandleBlock(ref context, Block2, hasReturn);
             }
+            
             context.WriteFull("}");
+
+            void HandleBlock(ref IntermediateContext contextPassed, IReadOnlyList<IntermediateInstruction> block, bool hasReturnPassed)
+            {
+                contextPassed.Indent();
+            
+                foreach (IntermediateInstruction instruction in block) {
+                    instruction.Handle(ref contextPassed);
+                }
+
+                if (hasReturnPassed) {
+                    var popped = contextPassed.Pop();
+                    Debug.Assert(popped.Type == ValueKind);
+                    contextPassed.WriteFull($"if_return {popped}");
+                }
+            
+                contextPassed.DeIndent();
+            }
         }
 
         public enum ControlBlockKind
