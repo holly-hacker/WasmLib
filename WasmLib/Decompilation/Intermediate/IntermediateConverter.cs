@@ -44,6 +44,7 @@ namespace WasmLib.Decompilation.Intermediate
 
                         var instr = function.Instructions[i];
                         if (instr.OpCode == InstructionKind.Else) {
+                            i++;
                             list2 = ConvertBlock(ref i);
                         }
                         else {

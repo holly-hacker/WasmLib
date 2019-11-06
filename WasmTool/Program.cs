@@ -34,7 +34,7 @@ namespace WasmTool
             using var w = new StreamWriter(fs);
             IDecompiler dec = new IntermediateRepresentationDecompiler(wasmFile);
 
-            for (int i = 0; i < Math.Min(wasmFile.FunctionBodies.Length, 38); i++) {
+            for (int i = 0; i < Math.Min(wasmFile.FunctionBodies.Length, 40); i++) {
                 dec.DecompileFunction(w, i);
             }
 

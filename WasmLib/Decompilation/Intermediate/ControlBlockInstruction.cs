@@ -53,7 +53,7 @@ namespace WasmLib.Decompilation.Intermediate
                 context.WriteFull("} else {");
                 
                 context.Indent();
-                foreach (IntermediateInstruction instruction in Block1) {
+                foreach (IntermediateInstruction instruction in Block2) {
                     instruction.Handle(ref context);
                 }
                 context.DeIndent();
