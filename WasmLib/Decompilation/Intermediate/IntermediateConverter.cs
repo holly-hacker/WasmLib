@@ -154,6 +154,14 @@ namespace WasmLib.Decompilation.Intermediate
                 case InstructionKind.F32Mul:
                 case InstructionKind.F64Mul:
                     
+                case InstructionKind.I32DivS:
+                case InstructionKind.I32DivU:
+                case InstructionKind.I32RemS:
+                case InstructionKind.I32RemU:
+                case InstructionKind.I64DivS:
+                case InstructionKind.I64DivU:
+                case InstructionKind.I64RemS:
+                case InstructionKind.I64RemU:
                 case InstructionKind.I32And:
                 case InstructionKind.I64And:
                 case InstructionKind.I32Or:
@@ -170,6 +178,15 @@ namespace WasmLib.Decompilation.Intermediate
                 case InstructionKind.I64Rotl:
                 case InstructionKind.I32Rotr:
                 case InstructionKind.I64Rotr:
+                    
+                case InstructionKind.F32Div:
+                case InstructionKind.F32Min:
+                case InstructionKind.F32Max:
+                case InstructionKind.F32Copysign:
+                case InstructionKind.F64Div:
+                case InstructionKind.F64Min:
+                case InstructionKind.F64Max:
+                case InstructionKind.F64Copysign:
                     return new BinaryOperationInstruction(instruction);
 
 
