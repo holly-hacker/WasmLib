@@ -214,6 +214,33 @@ namespace WasmLib.Decompilation.Intermediate
                 case InstructionKind.I64Eqz:
                     return new TestOperationInstruction(instruction);
 
+                case InstructionKind.I32WrapI64:
+                case InstructionKind.I32TruncF32S:
+                case InstructionKind.I32TruncF32U:
+                case InstructionKind.I32TruncF64S:
+                case InstructionKind.I32TruncF64U:
+                case InstructionKind.I64ExtendI32S:
+                case InstructionKind.I64ExtendI32U:
+                case InstructionKind.I64TruncF32S:
+                case InstructionKind.I64TruncF32U:
+                case InstructionKind.I64TruncF64S:
+                case InstructionKind.I64TruncF64U:
+                case InstructionKind.F32ConvertI32S:
+                case InstructionKind.F32ConvertI32U:
+                case InstructionKind.F32ConvertI64S:
+                case InstructionKind.F32ConvertI64U:
+                case InstructionKind.F32DemoteF64:
+                case InstructionKind.F64ConvertI32S:
+                case InstructionKind.F64ConvertI32U:
+                case InstructionKind.F64ConvertI64S:
+                case InstructionKind.F64ConvertI64U:
+                case InstructionKind.F64PromoteF32:
+                case InstructionKind.I32ReinterpretF32:
+                case InstructionKind.I64ReinterpretF64:
+                case InstructionKind.F32ReinterpretI32:
+                case InstructionKind.F64ReinterpretI64:
+                    return new ConversionInstruction(instruction);
+
                 default:
                     throw new NotImplementedException($"Unimplemented instruction {instruction}");
             }
