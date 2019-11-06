@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using WasmLib.FileFormat;
 using WasmLib.FileFormat.Instructions;
 using WasmLib.Utils;
@@ -46,8 +47,8 @@ namespace WasmLib.Decompilation.Intermediate
             
             var paramList = new List<Variable>();
 
-            // pop parameters
-            foreach (ValueKind param in Signature.Parameters) {
+            // pop parameters (in reverse)
+            foreach (ValueKind param in Signature.Parameters.Reverse()) {
                 var popped = context.Pop();
                 Debug.Assert(popped.Type == param);
                 paramList.Add(popped);
