@@ -17,8 +17,8 @@ namespace WasmLib.Decompilation.Intermediate
         public ControlBlockInstruction(Instruction instruction, IReadOnlyList<IntermediateInstruction> block1, IReadOnlyList<IntermediateInstruction>? block2)
         {
             Kind = instruction.OpCode switch {
-                InstructionKind.Block => throw new NotImplementedException(),
-                InstructionKind.Loop => throw new NotImplementedException(),
+                InstructionKind.Block => ControlBlockKind.Block,
+                InstructionKind.Loop => ControlBlockKind.Loop,
                 InstructionKind.If => ControlBlockKind.If,
                 _ => throw new WrongInstructionPassedException(instruction, nameof(ControlBlockInstruction))
             };

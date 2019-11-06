@@ -83,6 +83,11 @@ namespace WasmLib.Decompilation.Intermediate
                 case InstructionKind.End:
                     throw new Exception($"Encountered unexpected control flow instruction '{instruction}'");
                 
+                case InstructionKind.Br:
+                case InstructionKind.BrIf:
+                case InstructionKind.BrTable:
+                    return new BranchInstruction(instruction);
+                
                 case InstructionKind.Return:
                     return new ReturnInstruction();
                 case InstructionKind.Call:

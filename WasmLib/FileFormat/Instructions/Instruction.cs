@@ -15,6 +15,7 @@ namespace WasmLib.FileFormat.Instructions
         public int IntOperand => (int)operand;
         public ulong ULongOperand => operand;
         public long LongOperand => (long)operand;
+        public int[] IntArrayOperand => operandObject as int[] ?? throw new Exception($"Tried to get {nameof(IntArrayOperand)} when {nameof(operandObject)} was null");
 
         public Instruction(InstructionKind opCode, ulong operand = 0, object? operandObject = null)
         {
