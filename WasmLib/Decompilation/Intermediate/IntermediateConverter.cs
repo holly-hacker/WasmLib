@@ -141,6 +141,29 @@ namespace WasmLib.Decompilation.Intermediate
                 case InstructionKind.F64Const:
                     return new ConstInstruction(instruction);
                 
+                case InstructionKind.I32Clz:
+                case InstructionKind.I32Ctz:
+                case InstructionKind.I32Popcnt:
+                case InstructionKind.I64Clz:
+                case InstructionKind.I64Ctz:
+                case InstructionKind.I64Popcnt:
+                    
+                case InstructionKind.F32Abs:
+                case InstructionKind.F32Neg:
+                case InstructionKind.F32Ceil:
+                case InstructionKind.F32Floor:
+                case InstructionKind.F32Trunc:
+                case InstructionKind.F32Nearest:
+                case InstructionKind.F32Sqrt:
+                case InstructionKind.F64Abs:
+                case InstructionKind.F64Neg:
+                case InstructionKind.F64Ceil:
+                case InstructionKind.F64Floor:
+                case InstructionKind.F64Trunc:
+                case InstructionKind.F64Nearest:
+                case InstructionKind.F64Sqrt:
+                    return new UnaryOperationInstruction(instruction);
+                
                 case InstructionKind.I32Add:
                 case InstructionKind.I64Add:
                 case InstructionKind.F32Add:
