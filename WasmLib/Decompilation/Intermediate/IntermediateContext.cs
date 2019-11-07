@@ -74,6 +74,10 @@ namespace WasmLib.Decompilation.Intermediate
 
         public void WriteFull(string s)
         {
+            #if DEBUG
+            streamWriter.Write(Stack.Any() ? $"/* {Stack.Count,2} */" : "/*    */");
+            #endif
+            
             // NOTE: can split these up if needed for performance reasons (eg. to prevent string interp/concat on caller side)
             for (int i = 0; i < Indentation + 1; i++) {
                 streamWriter.Write('\t');
