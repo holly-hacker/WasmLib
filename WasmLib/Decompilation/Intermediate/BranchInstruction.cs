@@ -32,7 +32,7 @@ namespace WasmLib.Decompilation.Intermediate
             switch (Kind) {
                 case BranchKind.Normal:
                     context.WriteFull($"BRANCH {Label}");
-                    context.JumpedOutOfBlock = true;
+                    context.RestOfBlockUnreachable = true;
                     break;
                 case BranchKind.Conditional:
                     var condition = context.Pop();
@@ -44,7 +44,7 @@ namespace WasmLib.Decompilation.Intermediate
                     var index = context.Pop();
                     Debug.Assert(index.Type == ValueKind.I32);
                     context.WriteFull($"BRANCH_TABLE {{{string.Join(", ", Labels)}}}[{index}] ?? {Label}");
-                    context.JumpedOutOfBlock = true;
+                    context.RestOfBlockUnreachable = true;
                     break;
             }
         }

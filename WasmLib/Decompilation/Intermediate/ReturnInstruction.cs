@@ -18,7 +18,7 @@ namespace WasmLib.Decompilation.Intermediate
             // TODO: check if this assert is valid
             // Debug.Assert(context.Stack.Count == 0, "Wrote return instruction while stack was not empty");
 
-            context.JumpedOutOfBlock = true;
+            context.RestOfBlockUnreachable = true;
         }
     }
 }

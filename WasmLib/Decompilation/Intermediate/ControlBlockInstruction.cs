@@ -68,7 +68,7 @@ namespace WasmLib.Decompilation.Intermediate
                 }
 
                 // if stack has values left on it, and we expect a return value
-                if (hasReturn2 && !context2.JumpedOutOfBlock) {
+                if (hasReturn2 && !context2.RestOfBlockUnreachable) {
                     Debug.Assert(context2.StackIndices.Peek() != context2.Stack.Count);
                     
                     var popped = context2.Pop();

@@ -16,7 +16,9 @@ namespace WasmLib.Decompilation.Intermediate
                 context.WriteFull($"return {popped}");
             }
             else {
-                Debug.Assert(context.Signature.ReturnParameter.Length == 0, "No value on stack for function that doesn't return void");
+                if (!context.RestOfBlockUnreachable) {
+                    Debug.Assert(context.Signature.ReturnParameter.Length == 0, "No value on stack for function that doesn't return void");
+                }
             }
         }
     }

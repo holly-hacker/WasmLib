@@ -18,7 +18,7 @@ namespace WasmLib.Decompilation.Intermediate
         
         public Stack<Variable> Stack { get; }
         public Stack<int> StackIndices { get; }
-        public bool JumpedOutOfBlock { get; set; }
+        public bool RestOfBlockUnreachable { get; set; }
 
         private uint varCount;
 
@@ -42,7 +42,7 @@ namespace WasmLib.Decompilation.Intermediate
             StackIndices.Push(0);
             varCount = 0;
 
-            JumpedOutOfBlock = false;
+            RestOfBlockUnreachable = false;
         }
 
         public Variable Peek()
@@ -76,11 +76,11 @@ namespace WasmLib.Decompilation.Intermediate
             DeIndent();
             int previousStackSize = StackIndices.Pop();
 
-            if (!JumpedOutOfBlock) {
+            if (!RestOfBlockUnreachable) {
                 Debug.Assert(Stack.Count <= previousStackSize + 1);
             }
 
-            JumpedOutOfBlock = false;
+            RestOfBlockUnreachable = false;
 
             while (Stack.Count > previousStackSize) {
                 Stack.Pop();
