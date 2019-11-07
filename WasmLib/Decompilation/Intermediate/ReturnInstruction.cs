@@ -14,7 +14,9 @@ namespace WasmLib.Decompilation.Intermediate
             else {
                 context.WriteFull("return");
             }
-            Debug.Assert(context.Stack.Count == 0, "Wrote return instruction while stack was not empty");
+            
+            // TODO: check if this assert is valid
+            // Debug.Assert(context.Stack.Count == 0, "Wrote return instruction while stack was not empty");
             
             context.EndOfBlock = true;
         }
