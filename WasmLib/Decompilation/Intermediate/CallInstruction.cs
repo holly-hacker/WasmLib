@@ -22,8 +22,17 @@ namespace WasmLib.Decompilation.Intermediate
                 IsIndirect = false;
                 Name = "fun_" + index.ToString("X8");
 
-                // skipping signatures for imported functions
-                Signature = file.FunctionTypes[file.Functions[index - file.ImportedFunctionCount]];
+                if (index <= file.ImportedFunctionCount) {
+                    var import = file.Imports.Where(x => x.Kind == ImportKind.TypeIndex).Skip((int)index).First();
+                    
+                    Debug.Assert(import.SignatureIndex != null);
+                    Name = import.ModuleName + "." + import.ExportName;
+                    Signature = file.FunctionTypes[import.SignatureIndex.Value];
+                }
+                else {
+                    // skipping signatures for imported functions
+                    Signature = file.FunctionTypes[file.Functions[index - file.ImportedFunctionCount]];
+                }
             }
             else if (instruction.OpCode == InstructionKind.CallIndirect) {
                 IsIndirect = true;

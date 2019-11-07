@@ -10,6 +10,9 @@ namespace WasmTool
     {
         private static void Main(string[] args)
         {
+            // print debug messages to console
+            Trace.Listeners.Add(new ConsoleTraceListener());
+            
             if (args.Length == 0) {
                 Console.WriteLine("Pass me an argument");
                 return;
@@ -34,8 +37,8 @@ namespace WasmTool
             using var w = new StreamWriter(fs);
             IDecompiler dec = new IntermediateRepresentationDecompiler(wasmFile);
 
-            for (int i = 0; i < Math.Min(wasmFile.FunctionBodies.Length, 297); i++) {
-                Console.WriteLine($"Decompiling function {i} (0x{i:X})");
+            for (int i = 0; i < Math.Min(wasmFile.FunctionBodies.Length, 520); i++) {
+                Debug.WriteLine($"Decompiling function {i} (0x{i:X})");
                 dec.DecompileFunction(w, i);
             }
 
