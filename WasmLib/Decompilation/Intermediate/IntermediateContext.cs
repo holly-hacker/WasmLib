@@ -18,6 +18,8 @@ namespace WasmLib.Decompilation.Intermediate
         
         public Stack<Variable> Stack { get; }
         public Stack<int> StackIndices { get; }
+        public bool JumpedOutOfBlock { get; set; }
+
         private uint varCount;
 
         public IntermediateContext(FunctionBody function, FunctionSignature signature, WasmFile wasmFile, StreamWriter writer)
@@ -39,6 +41,8 @@ namespace WasmLib.Decompilation.Intermediate
             StackIndices = new Stack<int>();
             StackIndices.Push(0);
             varCount = 0;
+
+            JumpedOutOfBlock = false;
         }
 
         public Variable Peek()
@@ -71,6 +75,12 @@ namespace WasmLib.Decompilation.Intermediate
         {
             DeIndent();
             int previousStackSize = StackIndices.Pop();
+
+            if (!JumpedOutOfBlock) {
+                Debug.Assert(Stack.Count <= previousStackSize + 1);
+            }
+
+            JumpedOutOfBlock = false;
 
             while (Stack.Count > previousStackSize) {
                 Stack.Pop();

@@ -5,6 +5,7 @@ namespace WasmLib.Decompilation.Intermediate
         public override void Handle(ref IntermediateContext context)
         {
             context.WriteFull("// UNREACHABLE");
+            context.JumpedOutOfBlock = true;
         }
     }
 }
