@@ -62,17 +62,27 @@ namespace WasmLib.Decompilation.Intermediate
             void HandleBlock(ref IntermediateContext contextPassed, IReadOnlyList<IntermediateInstruction> block, bool hasReturnPassed)
             {
                 contextPassed.Indent();
+
+                // NOTE: could be optimized if blocks don't pop from stack
+                // TODO: check this by having a Stack<int> of stack sizes in context, and not allowing to go under it
+                var stackBackup = new Stack<Variable>(contextPassed.Stack);
             
                 foreach (IntermediateInstruction instruction in block) {
                     instruction.Handle(ref contextPassed);
                 }
 
-                if (hasReturnPassed && !contextPassed.EndOfBlock) {
-                    var popped = contextPassed.Pop();
-                    Debug.Assert(popped.Type == ValueKind);
-                    contextPassed.WriteFull($"block_return {popped}");
+                if (!contextPassed.EndOfBlock) {
+                    if (hasReturnPassed) {
+                        var popped = contextPassed.Pop();
+                        Debug.Assert(popped.Type == ValueKind);
+                        contextPassed.WriteFull($"block_return {popped}");
+                    }
                 }
-            
+                else {
+                    // block ended on unconditional branch instruction, restore stack to what it was before
+                    contextPassed.RestoreStack(stackBackup);
+                }
+
                 contextPassed.DeIndent();
                 contextPassed.EndOfBlock = false;
             }

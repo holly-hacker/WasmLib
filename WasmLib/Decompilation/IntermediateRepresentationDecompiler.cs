@@ -46,8 +46,7 @@ namespace WasmLib.Decompilation
             }
 
             if (context.Stack.Count != 0) {
-                // throw new Exception($"Unbalanced stack, found {context.Stack.Count} remaining values");
-                Console.WriteLine($"Unbalanced stack, found {context.Stack.Count} remaining values");
+                throw new Exception($"Unbalanced stack, found {context.Stack.Count} remaining values");
             }
             
             output.WriteLine();

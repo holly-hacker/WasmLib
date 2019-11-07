@@ -16,7 +16,7 @@ namespace WasmLib.Decompilation.Intermediate
         public WasmFile WasmFile { get; }
         private readonly StreamWriter streamWriter;
         
-        public Stack<Variable> Stack { get; }
+        public Stack<Variable> Stack { get; private set; }
         public bool EndOfBlock { get; set; }
 
         private uint varCount;
@@ -58,6 +58,12 @@ namespace WasmLib.Decompilation.Intermediate
             Variable variable = Variable.Stack(type, varCount++);
             Stack.Push(variable);
             return variable;
+        }
+
+        public void RestoreStack(Stack<Variable> newStack)
+        {
+            Debug.Assert(EndOfBlock, "Tried to restore a stack but EndOfBlock was not set");
+            Stack = newStack;
         }
 
         public ValueKind GetLocalType(uint i) => Locals[(int)i];
