@@ -71,7 +71,7 @@ namespace WasmLib.Decompilation.Intermediate
         {
             switch (instruction.OpCode) {
                 case InstructionKind.Unreachable:
-                    throw new NotImplementedException();
+                    return new UnreachableInstruction();
                 case InstructionKind.Nop:
                     return null;
                 
