@@ -17,6 +17,8 @@ namespace WasmLib.Decompilation.Intermediate
         private readonly StreamWriter streamWriter;
         
         public Stack<Variable> Stack { get; }
+        public bool EndOfBlock { get; set; }
+
         private uint varCount;
 
         public IntermediateContext(FunctionBody function, FunctionSignature signature, WasmFile wasmFile, StreamWriter writer)
@@ -35,6 +37,7 @@ namespace WasmLib.Decompilation.Intermediate
             Globals = importGlobals.Concat(globals).Select(x => x.ValueKind).ToList();
             streamWriter = writer;
             Stack = new Stack<Variable>();
+            EndOfBlock = false;
             varCount = 0;
         }
 

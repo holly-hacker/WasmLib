@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using WasmLib.Decompilation.Intermediate;
 using WasmLib.FileFormat;
@@ -30,6 +31,7 @@ namespace WasmLib.Decompilation
             // write all IR while simulating the stack
             foreach (IntermediateInstruction instruction in instructions) {
                 instruction.Handle(ref context);
+                Debug.Assert(!context.EndOfBlock, "Encountered EndOfBlock instruction when not in block");
             }
             
             // write return value, if needed

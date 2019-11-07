@@ -33,10 +33,6 @@ namespace WasmLib.Decompilation.Intermediate
         {
             bool hasReturn = ValueKind != ValueKind.Empty;
 
-            if (hasReturn) {
-                Debug.Assert(Kind == ControlBlockKind.If);
-            }
-
             string keyword = EnumUtils.GetDescription(Kind);
 
             if (Kind == ControlBlockKind.If) {
@@ -54,7 +50,9 @@ namespace WasmLib.Decompilation.Intermediate
             
             HandleBlock(ref context, Block1, hasReturn);
 
-            if (Kind == ControlBlockKind.If && Block2 != null) {
+            if (Block2 != null) {
+                Debug.Assert(Kind == ControlBlockKind.If);
+
                 context.WriteFull("} else {");
                 HandleBlock(ref context, Block2, hasReturn);
             }
@@ -69,13 +67,14 @@ namespace WasmLib.Decompilation.Intermediate
                     instruction.Handle(ref contextPassed);
                 }
 
-                if (hasReturnPassed) {
+                if (hasReturnPassed && !contextPassed.EndOfBlock) {
                     var popped = contextPassed.Pop();
                     Debug.Assert(popped.Type == ValueKind);
-                    contextPassed.WriteFull($"if_return {popped}");
+                    contextPassed.WriteFull($"block_return {popped}");
                 }
             
                 contextPassed.DeIndent();
+                contextPassed.EndOfBlock = false;
             }
         }
 
