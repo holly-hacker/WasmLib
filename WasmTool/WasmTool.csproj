@@ -11,4 +11,8 @@
       <ProjectReference Include="..\WasmLib\WasmLib.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="EntryPoint" Version="1.3.0" />
+    </ItemGroup>
+
 </Project>

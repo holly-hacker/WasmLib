@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using EntryPoint;
 using WasmLib;
 using WasmLib.Decompilation;
+using WasmTool.CommandLine;
 
 namespace WasmTool
 {
@@ -12,30 +14,31 @@ namespace WasmTool
         {
             // print debug messages to console
             Trace.Listeners.Add(new ConsoleTraceListener());
-            
-            if (args.Length == 0) {
-                Console.WriteLine("Pass me an argument");
-                return;
-            }
 
-            string filename = args[0];
+            var arguments = Cli.Parse<CliArguments>(args);
 
-            if (!File.Exists(filename)) {
+            if (!File.Exists(arguments.InputFile)) {
                 Console.WriteLine("Pass me a file as argument");
                 return;
             }
 
             var sw = Stopwatch.StartNew();
-            var wasmFile = WasmFile.Read(filename);
+            var wasmFile = WasmFile.Read(arguments.InputFile);
             sw.Stop();
             Console.WriteLine($"Read in {sw.Elapsed}");
 
             Console.WriteLine("wasm version: " + wasmFile.Version);
 
             sw = Stopwatch.StartNew();
-            using var fs = File.Open("out.txt", FileMode.Create);
-            using var w = new StreamWriter(fs);
-            IDecompiler dec = new IntermediateRepresentationDecompiler(wasmFile);
+            Stream outputStream = arguments.OutputFile is null
+                ? Console.OpenStandardOutput()
+                : File.Open(arguments.OutputFile, FileMode.Create);
+            using var w = new StreamWriter(outputStream);
+            IDecompiler dec = arguments.Decompiler switch {
+                DecompilerKind.Disassembler => (IDecompiler)new DisassemblingDecompiler(wasmFile),
+                DecompilerKind.IntermediateRepresentation => new IntermediateRepresentationDecompiler(wasmFile),
+                _ => throw new Exception("Invalid decompiler type specified"),
+            };
 
             for (int i = 0; i < wasmFile.FunctionBodies.Length; i++) {
                 Debug.WriteLine($"Decompiling function {i} (0x{i:X})");
@@ -43,7 +46,7 @@ namespace WasmTool
             }
 
             sw.Stop();
-            Console.WriteLine($"Written to out.txt in {sw.Elapsed}");
+            Console.WriteLine($"Written to {arguments.OutputFile} in {sw.Elapsed}");
         }
     }
 }
