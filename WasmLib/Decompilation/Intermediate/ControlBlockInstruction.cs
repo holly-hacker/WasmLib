@@ -59,32 +59,22 @@ namespace WasmLib.Decompilation.Intermediate
             
             context.WriteFull("}");
 
-            void HandleBlock(ref IntermediateContext contextPassed, IReadOnlyList<IntermediateInstruction> block, bool hasReturnPassed)
+            void HandleBlock(ref IntermediateContext context2, IReadOnlyList<IntermediateInstruction> block, bool hasReturn2)
             {
-                contextPassed.Indent();
-
-                // NOTE: could be optimized if blocks don't pop from stack
-                // TODO: check this by having a Stack<int> of stack sizes in context, and not allowing to go under it
-                var stackBackup = new Stack<Variable>(contextPassed.Stack);
+                context2.EnterBlock();
             
                 foreach (IntermediateInstruction instruction in block) {
-                    instruction.Handle(ref contextPassed);
+                    instruction.Handle(ref context2);
                 }
 
-                if (!contextPassed.EndOfBlock) {
-                    if (hasReturnPassed) {
-                        var popped = contextPassed.Pop();
-                        Debug.Assert(popped.Type == ValueKind);
-                        contextPassed.WriteFull($"block_return {popped}");
-                    }
-                }
-                else {
-                    // block ended on unconditional branch instruction, restore stack to what it was before
-                    contextPassed.RestoreStack(stackBackup);
+                // if stack has values left on it, and we expect a return value
+                if (context2.StackIndices.Peek() != context2.Stack.Count && hasReturn2) {
+                    var popped = context2.Pop();
+                    Debug.Assert(popped.Type == ValueKind);
+                    context2.WriteFull($"block_return {popped}");
                 }
 
-                contextPassed.DeIndent();
-                contextPassed.EndOfBlock = false;
+                context2.ExitBlock();
             }
         }
 

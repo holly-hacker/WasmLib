@@ -16,9 +16,8 @@ namespace WasmLib.Decompilation.Intermediate
         public WasmFile WasmFile { get; }
         private readonly StreamWriter streamWriter;
         
-        public Stack<Variable> Stack { get; private set; }
-        public bool EndOfBlock { get; set; }
-
+        public Stack<Variable> Stack { get; }
+        public Stack<int> StackIndices { get; }
         private uint varCount;
 
         public IntermediateContext(FunctionBody function, FunctionSignature signature, WasmFile wasmFile, StreamWriter writer)
@@ -32,24 +31,26 @@ namespace WasmLib.Decompilation.Intermediate
                 .Where(x => x.Kind == ImportKind.GlobalType)
                 .Select(x =>
                     x.GlobalType ??
-                    throw new Exception("Import.GlobalType had no value, but Import.Kind was GlobalType"));
+                    throw new Exception($"{nameof(Import.GlobalType)} had no value, but {nameof(Import.Kind)} was {nameof(ImportKind.GlobalType)}"));
             var globals = wasmFile.Globals.Select(x => x.GlobalType); 
             Globals = importGlobals.Concat(globals).Select(x => x.ValueKind).ToList();
             streamWriter = writer;
             Stack = new Stack<Variable>();
-            EndOfBlock = false;
+            StackIndices = new Stack<int>();
+            StackIndices.Push(0);
             varCount = 0;
         }
 
         public Variable Peek()
         {
-            Debug.Assert(Stack.TryPeek(out _), "Tried to peek a value from an empty stack");
+            Debug.Assert(Stack.Any(), "Tried to peek a value from an empty stack");
             return Stack.Peek();
         }
 
         public Variable Pop()
         {
-            Debug.Assert(Stack.TryPeek(out _), "Tried to pop a value from an empty stack");
+            Debug.Assert(Stack.Any(), "Tried to pop a value from an empty stack");
+            Debug.Assert(Stack.Count > StackIndices.Peek(), $"Pop causes stack size to becomes less than {StackIndices.Count}, which is the minimum for this block");
             return Stack.Pop();
         }
 
@@ -60,10 +61,20 @@ namespace WasmLib.Decompilation.Intermediate
             return variable;
         }
 
-        public void RestoreStack(Stack<Variable> newStack)
+        public void EnterBlock()
         {
-            Debug.Assert(EndOfBlock, "Tried to restore a stack but EndOfBlock was not set");
-            Stack = newStack;
+            Indent();
+            StackIndices.Push(Stack.Count);
+        }
+
+        public void ExitBlock()
+        {
+            DeIndent();
+            int previousStackSize = StackIndices.Pop();
+
+            while (Stack.Count > previousStackSize) {
+                Stack.Pop();
+            }
         }
 
         public ValueKind GetLocalType(uint i) => Locals[(int)i];

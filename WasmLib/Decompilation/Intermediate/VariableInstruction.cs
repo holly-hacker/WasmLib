@@ -49,12 +49,12 @@ namespace WasmLib.Decompilation.Intermediate
                 }
                 else if (Action == ActionKind.Set) {
                     var popped = context.Pop();
-                    Debug.Assert(local == popped.Type);
+                    Debug.Assert(local == popped.Type, $"popped {popped} ({popped.Type}), expected {local}");
                     context.WriteFull($"local[{Index}] = {popped}");
                 }
                 else if (Action == ActionKind.Tee) {
                     var peeked = context.Stack.Peek();
-                    Debug.Assert(local == peeked.Type);
+                    Debug.Assert(local == peeked.Type, $"peeked {peeked} ({peeked.Type}), expected {local}");
                     context.WriteFull($"local[{Index}] = {peeked}");
                 }
             }
@@ -69,7 +69,7 @@ namespace WasmLib.Decompilation.Intermediate
                 else if (Action == ActionKind.Set) {
                     // NOTE: could check for mutability of global
                     var popped = context.Pop();
-                    Debug.Assert(global == popped.Type);
+                    Debug.Assert(global == popped.Type, $"popped {popped} ({popped.Type}), expected {global}");
                     context.WriteFull($"global[{Index}] = {popped}");
                 }
             }
