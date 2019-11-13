@@ -9,19 +9,19 @@ namespace WasmLib.FileFormat.Instructions
         public OpCode OpCode { get; }
 
         private readonly ulong operand;
-        private readonly object? operandObject; // NOTE: this is only ever a uint[], could be specified
+        private readonly uint[]? uIntArrayOperand;
 
         public uint UIntOperand => (uint)operand;
         public int IntOperand => (int)operand;
         public ulong ULongOperand => operand;
         public long LongOperand => (long)operand;
-        public int[] IntArrayOperand => operandObject as int[] ?? throw new Exception($"Tried to get {nameof(IntArrayOperand)} when {nameof(operandObject)} was null");
+        public uint[] UIntArrayOperand => uIntArrayOperand ?? throw new Exception($"Tried to get {nameof(UIntArrayOperand)} when {nameof(uIntArrayOperand)} was null");
 
-        public Instruction(OpCode opCode, ulong operand = 0, object? operandObject = null)
+        public Instruction(OpCode opCode, ulong operand = 0, uint[]? uIntArrayOperand = null)
         {
             OpCode = opCode;
             this.operand = operand;
-            this.operandObject = operandObject;
+            this.uIntArrayOperand = uIntArrayOperand;
         }
 
         public override string ToString()
@@ -32,7 +32,7 @@ namespace WasmLib.FileFormat.Instructions
                 case OperandKind.None:
                     return opcodeString;
                 case OperandKind.BrTableOperand:
-                    return $"{opcodeString} {string.Join("-", ((uint[])operandObject!).Select(x => $"0x{x:X}"))} 0x{operand:x}";
+                    return $"{opcodeString} {string.Join("-", uIntArrayOperand!.Select(x => $"0x{x:X}"))} 0x{operand:x}";
                 case OperandKind.BlockType:
                     return $"{opcodeString} {(ValueKind)operand}";
                 case OperandKind.LabelIndex:

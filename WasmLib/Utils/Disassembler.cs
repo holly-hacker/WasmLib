@@ -44,7 +44,7 @@ namespace WasmLib.Utils
                     Debug.Assert(trap == 0x00);
                     return instruction;
                 case OperandKind.BrTableOperand:
-                    return new Instruction(opcode, operandObject: br.ReadVarUint32Array(), operand: br.ReadVarUint32());
+                    return new Instruction(opcode, uIntArrayOperand: br.ReadVarUint32Array(), operand: br.ReadVarUint32());
                 case OperandKind.MemArg:
                     return new Instruction(opcode, br.ReadVarUint32() | ((ulong)br.ReadVarUint32() << 32));
                 case OperandKind.Zero:

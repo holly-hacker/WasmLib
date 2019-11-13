@@ -8,8 +8,8 @@ namespace WasmLib.Decompilation.Intermediate
     public class BranchInstruction : IntermediateInstruction
     {
         public BranchKind Kind { get; }
-        public int Label { get; }
-        public int[]? Labels { get; }
+        public uint Label { get; }
+        public uint[]? Labels { get; }
         
         public BranchInstruction(in Instruction instruction)
         {
@@ -20,10 +20,10 @@ namespace WasmLib.Decompilation.Intermediate
                 _ => throw new WrongInstructionPassedException(instruction, nameof(BranchInstruction)),
             };
 
-            Label = instruction.IntOperand;
+            Label = instruction.UIntOperand;
 
             if (Kind == BranchKind.Table) {
-                Labels = instruction.IntArrayOperand;
+                Labels = instruction.UIntArrayOperand;
             }
         }
         
