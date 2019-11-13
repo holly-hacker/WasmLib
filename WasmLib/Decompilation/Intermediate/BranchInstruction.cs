@@ -14,9 +14,9 @@ namespace WasmLib.Decompilation.Intermediate
         public BranchInstruction(Instruction instruction)
         {
             Kind = instruction.OpCode switch {
-                InstructionKind.Br => BranchKind.Normal,
-                InstructionKind.BrIf => BranchKind.Conditional,
-                InstructionKind.BrTable => BranchKind.Table,
+                OpCode.Br => BranchKind.Normal,
+                OpCode.BrIf => BranchKind.Conditional,
+                OpCode.BrTable => BranchKind.Table,
                 _ => throw new WrongInstructionPassedException(instruction, nameof(BranchInstruction)),
             };
 

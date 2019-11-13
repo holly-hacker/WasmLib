@@ -14,29 +14,29 @@ namespace WasmLib.Decompilation.Intermediate
         public bool IsIndirect { get; }
         public FunctionSignature Signature { get; }
         
-        public CallInstruction(WasmFile file, Instruction instruction)
+        public CallInstruction(WasmModule module, Instruction instruction)
         {
             uint index = instruction.UIntOperand;
 
-            if (instruction.OpCode == InstructionKind.Call) {
+            if (instruction.OpCode == OpCode.Call) {
                 IsIndirect = false;
                 Name = "fun_" + index.ToString("X8");
 
-                if (index <= file.ImportedFunctionCount) {
-                    var import = file.Imports.Where(x => x.Kind == ImportKind.TypeIndex).Skip((int)index).First();
+                if (index <= module.ImportedFunctionCount) {
+                    var import = module.Imports.Where(x => x.Kind == ImportKind.TypeIndex).Skip((int)index).First();
                     
                     Debug.Assert(import.SignatureIndex != null);
                     Name = import.ModuleName + "." + import.ExportName;
-                    Signature = file.FunctionTypes[import.SignatureIndex.Value];
+                    Signature = module.FunctionTypes[import.SignatureIndex.Value];
                 }
                 else {
                     // skipping signatures for imported functions
-                    Signature = file.FunctionTypes[file.Functions[index - file.ImportedFunctionCount]];
+                    Signature = module.FunctionTypes[module.Functions[index - module.ImportedFunctionCount]];
                 }
             }
-            else if (instruction.OpCode == InstructionKind.CallIndirect) {
+            else if (instruction.OpCode == OpCode.CallIndirect) {
                 IsIndirect = true;
-                Signature = file.FunctionTypes[index];
+                Signature = module.FunctionTypes[index];
             }
             else {
                 throw new WrongInstructionPassedException(instruction, nameof(CallInstruction));

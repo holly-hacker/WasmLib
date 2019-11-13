@@ -13,10 +13,10 @@ namespace WasmLib.Decompilation.Intermediate
         public ConstInstruction(Instruction instruction)
         {
             Type = instruction.OpCode switch {
-                InstructionKind.I32Const => ValueKind.I32,
-                InstructionKind.I64Const => ValueKind.I64,
-                InstructionKind.F32Const => ValueKind.F32,
-                InstructionKind.F64Const => ValueKind.F64,
+                OpCode.I32Const => ValueKind.I32,
+                OpCode.I64Const => ValueKind.I64,
+                OpCode.F32Const => ValueKind.F32,
+                OpCode.F64Const => ValueKind.F64,
                 _ => throw new WrongInstructionPassedException(instruction, nameof(VariableInstruction)),
             };
             RawOperand = instruction.ULongOperand;

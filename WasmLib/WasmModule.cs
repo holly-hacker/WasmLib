@@ -8,7 +8,7 @@ using WasmLib.Utils;
 
 namespace WasmLib
 {
-    public class WasmFile
+    public class WasmModule
     {
         public int Version { get; private set; }
 
@@ -23,17 +23,17 @@ namespace WasmLib
         
         public int ImportedFunctionCount { get; private set; }
 
-        private WasmFile() { }
+        private WasmModule() { }
 
-        public static WasmFile Read(string path)
+        public static WasmModule Read(string path)
         {
             using var fs = File.OpenRead(path);
             return Read(fs);
         }
 
-        public static WasmFile Read(Stream stream)
+        public static WasmModule Read(Stream stream)
         {
-            var file = new WasmFile();
+            var file = new WasmModule();
 
             using (var br = new BinaryReader(stream, Encoding.UTF8, true)) {
                 var magic = br.ReadBytes(4);

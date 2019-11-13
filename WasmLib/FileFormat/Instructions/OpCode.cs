@@ -7,7 +7,7 @@ namespace WasmLib.FileFormat.Instructions
     /// Documentation at https://webassembly.github.io/spec/core/binary/instructions.html
     /// </remarks>
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public enum InstructionKind
+    public enum OpCode
     {
         // Control Instructions
         [Description("unreachable")] Unreachable = 0x00,

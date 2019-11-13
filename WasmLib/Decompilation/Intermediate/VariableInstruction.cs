@@ -15,11 +15,11 @@ namespace WasmLib.Decompilation.Intermediate
         public VariableInstruction(in Instruction instruction)
         {
             (Target, Action) = instruction.OpCode switch {
-                InstructionKind.LocalGet => (TargetKind.Local, ActionKind.Get),
-                InstructionKind.LocalSet => (TargetKind.Local, ActionKind.Set),
-                InstructionKind.LocalTee => (TargetKind.Local, ActionKind.Tee),
-                InstructionKind.GlobalGet => (TargetKind.Global, ActionKind.Get),
-                InstructionKind.GlobalSet => (TargetKind.Global, ActionKind.Set),
+                OpCode.LocalGet => (TargetKind.Local, ActionKind.Get),
+                OpCode.LocalSet => (TargetKind.Local, ActionKind.Set),
+                OpCode.LocalTee => (TargetKind.Local, ActionKind.Tee),
+                OpCode.GlobalGet => (TargetKind.Global, ActionKind.Get),
+                OpCode.GlobalSet => (TargetKind.Global, ActionKind.Set),
                 _ => throw new WrongInstructionPassedException(instruction, nameof(VariableInstruction)),
             };
             Index = instruction.UIntOperand;

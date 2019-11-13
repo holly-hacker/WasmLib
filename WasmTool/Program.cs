@@ -23,7 +23,7 @@ namespace WasmTool
             }
 
             var sw = Stopwatch.StartNew();
-            var wasmFile = WasmFile.Read(arguments.InputFile);
+            var wasmFile = WasmModule.Read(arguments.InputFile);
             sw.Stop();
             Console.WriteLine($"Read in {sw.Elapsed}");
 

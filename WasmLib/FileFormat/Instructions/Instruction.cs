@@ -6,7 +6,7 @@ namespace WasmLib.FileFormat.Instructions
 {
     public partial struct Instruction
     {
-        public InstructionKind OpCode { get; private set; }
+        public OpCode OpCode { get; private set; }
 
         private readonly ulong operand;
         private readonly object? operandObject; // NOTE: this is only ever a uint[], could be specified
@@ -17,7 +17,7 @@ namespace WasmLib.FileFormat.Instructions
         public long LongOperand => (long)operand;
         public int[] IntArrayOperand => operandObject as int[] ?? throw new Exception($"Tried to get {nameof(IntArrayOperand)} when {nameof(operandObject)} was null");
 
-        public Instruction(InstructionKind opCode, ulong operand = 0, object? operandObject = null)
+        public Instruction(OpCode opCode, ulong operand = 0, object? operandObject = null)
         {
             OpCode = opCode;
             this.operand = operand;

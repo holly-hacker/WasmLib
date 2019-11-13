@@ -2,82 +2,82 @@ namespace WasmLib.FileFormat.Instructions
 {
     public partial struct Instruction
     {
-        public static OperandKind GetOperandKind(InstructionKind instr)
+        public static OperandKind GetOperandKind(OpCode instr)
         {
             switch (instr) {
-                case InstructionKind.Unreachable:
-                case InstructionKind.Nop:
+                case OpCode.Unreachable:
+                case OpCode.Nop:
                     return OperandKind.None;
 
-                case InstructionKind.Block: // these are special opcodes that serve as control flow markers
-                case InstructionKind.Loop:
-                case InstructionKind.If:
+                case OpCode.Block: // these are special opcodes that serve as control flow markers
+                case OpCode.Loop:
+                case OpCode.If:
                     return OperandKind.BlockType;
-                case InstructionKind.Else:
-                case InstructionKind.End:
+                case OpCode.Else:
+                case OpCode.End:
                     return OperandKind.None;
 
-                case InstructionKind.Br:
-                case InstructionKind.BrIf:
+                case OpCode.Br:
+                case OpCode.BrIf:
                     return OperandKind.LabelIndex;
-                case InstructionKind.BrTable:
+                case OpCode.BrTable:
                     return OperandKind.BrTableOperand;
 
-                case InstructionKind.Return:
+                case OpCode.Return:
                     return OperandKind.None;
-                case InstructionKind.Call:
+                case OpCode.Call:
                     return OperandKind.FuncIndex;
-                case InstructionKind.CallIndirect:
+                case OpCode.CallIndirect:
                     return OperandKind.IndirectCallTypeIndex;
 
-                case InstructionKind.Drop:
-                case InstructionKind.Select:
+                case OpCode.Drop:
+                case OpCode.Select:
                     return OperandKind.None;
 
-                case InstructionKind.LocalGet:
-                case InstructionKind.LocalSet:
-                case InstructionKind.LocalTee:
+                case OpCode.LocalGet:
+                case OpCode.LocalSet:
+                case OpCode.LocalTee:
                     return OperandKind.LocalIndex;
-                case InstructionKind.GlobalGet:
-                case InstructionKind.GlobalSet:
+                case OpCode.GlobalGet:
+                case OpCode.GlobalSet:
                     return OperandKind.GlobalIndex;
 
-                case InstructionKind.I32Load:
-                case InstructionKind.I64Load:
-                case InstructionKind.F32Load:
-                case InstructionKind.F64Load:
-                case InstructionKind.I32Load8S:
-                case InstructionKind.I32Load8U:
-                case InstructionKind.I32Load16S:
-                case InstructionKind.I32Load16U:
-                case InstructionKind.I64Load8S:
-                case InstructionKind.I64Load8U:
-                case InstructionKind.I64Load16S:
-                case InstructionKind.I64Load16U:
-                case InstructionKind.I64Load32S:
-                case InstructionKind.I64Load32U:
-                case InstructionKind.I32Store:
-                case InstructionKind.I64Store:
-                case InstructionKind.F32Store:
-                case InstructionKind.F64Store:
-                case InstructionKind.I32Store8:
-                case InstructionKind.I32Store16:
-                case InstructionKind.I64Store8:
-                case InstructionKind.I64Store16:
-                case InstructionKind.I64Store32:
+                case OpCode.I32Load:
+                case OpCode.I64Load:
+                case OpCode.F32Load:
+                case OpCode.F64Load:
+                case OpCode.I32Load8S:
+                case OpCode.I32Load8U:
+                case OpCode.I32Load16S:
+                case OpCode.I32Load16U:
+                case OpCode.I64Load8S:
+                case OpCode.I64Load8U:
+                case OpCode.I64Load16S:
+                case OpCode.I64Load16U:
+                case OpCode.I64Load32S:
+                case OpCode.I64Load32U:
+                case OpCode.I32Store:
+                case OpCode.I64Store:
+                case OpCode.F32Store:
+                case OpCode.F64Store:
+                case OpCode.I32Store8:
+                case OpCode.I32Store16:
+                case OpCode.I64Store8:
+                case OpCode.I64Store16:
+                case OpCode.I64Store32:
                     return OperandKind.MemArg;
 
-                case InstructionKind.MemorySize:
-                case InstructionKind.MemoryGrow:
+                case OpCode.MemorySize:
+                case OpCode.MemoryGrow:
                     return OperandKind.Zero;
 
-                case InstructionKind.I32Const:
+                case OpCode.I32Const:
                     return OperandKind.ImmediateI32;
-                case InstructionKind.I64Const:
+                case OpCode.I64Const:
                     return OperandKind.ImmediateI64;
-                case InstructionKind.F32Const:
+                case OpCode.F32Const:
                     return OperandKind.ImmediateF32;
-                case InstructionKind.F64Const:
+                case OpCode.F64Const:
                     return OperandKind.ImmediateF64;
 
                 default: // anything after 0x45 does not have an operand

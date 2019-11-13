@@ -13,7 +13,7 @@ namespace WasmLib.Decompilation.Intermediate
         public IReadOnlyList<ValueKind> Locals { get; }
         public IReadOnlyList<ValueKind> Globals { get; }
         public FunctionSignature Signature { get; }
-        public WasmFile WasmFile { get; }
+        public WasmModule WasmModule { get; }
         private readonly StreamWriter streamWriter;
         
         public Stack<Variable> Stack { get; }
@@ -22,19 +22,19 @@ namespace WasmLib.Decompilation.Intermediate
 
         private uint varCount;
 
-        public IntermediateContext(FunctionBody function, FunctionSignature signature, WasmFile wasmFile, StreamWriter writer)
+        public IntermediateContext(FunctionBody function, FunctionSignature signature, WasmModule wasmModule, StreamWriter writer)
         {
             Indentation = 0;
             Locals = signature.Parameters.Concat(function.Locals).ToList();
             Signature = signature;
-            WasmFile = wasmFile;
+            WasmModule = wasmModule;
 
-            var importGlobals = wasmFile.Imports
+            var importGlobals = wasmModule.Imports
                 .Where(x => x.Kind == ImportKind.GlobalType)
                 .Select(x =>
                     x.GlobalType ??
                     throw new Exception($"{nameof(Import.GlobalType)} had no value, but {nameof(Import.Kind)} was {nameof(ImportKind.GlobalType)}"));
-            var globals = wasmFile.Globals.Select(x => x.GlobalType); 
+            var globals = wasmModule.Globals.Select(x => x.GlobalType); 
             Globals = importGlobals.Concat(globals).Select(x => x.ValueKind).ToList();
             streamWriter = writer;
             Stack = new Stack<Variable>();

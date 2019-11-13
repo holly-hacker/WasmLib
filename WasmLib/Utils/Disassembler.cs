@@ -21,12 +21,12 @@ namespace WasmLib.Utils
             Instruction instr;
             do {
                 yield return instr = DisassembleInstruction(br);
-            } while (instr.OpCode != InstructionKind.End);
+            } while (instr.OpCode != OpCode.End);
         }
 
         public static Instruction DisassembleInstruction(BinaryReader br)
         {
-            var opcode = (InstructionKind)br.ReadByte();
+            var opcode = (OpCode)br.ReadByte();
 
             switch (Instruction.GetOperandKind(opcode)) {
                 case OperandKind.None:

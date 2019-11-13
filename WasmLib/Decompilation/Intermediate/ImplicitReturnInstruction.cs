@@ -5,7 +5,7 @@ namespace WasmLib.Decompilation.Intermediate
     /// <remarks>
     /// This is a pseudo-instruction to handle implicit returns at the end of a function
     /// </remarks>
-    public class FakeReturnInstruction : IntermediateInstruction
+    public class ImplicitReturnInstruction : IntermediateInstruction
     {
         public override void Handle(ref IntermediateContext context)
         {

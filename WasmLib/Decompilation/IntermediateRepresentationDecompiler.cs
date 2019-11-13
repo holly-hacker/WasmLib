@@ -8,21 +8,21 @@ namespace WasmLib.Decompilation
 {
     public class IntermediateRepresentationDecompiler : IDecompiler
     {
-        public WasmFile WasmFile { get; }
+        public WasmModule WasmModule { get; }
 
-        public IntermediateRepresentationDecompiler(WasmFile wasmFile)
+        public IntermediateRepresentationDecompiler(WasmModule wasmModule)
         {
-            WasmFile = wasmFile;
+            WasmModule = wasmModule;
         }
 
         public void DecompileFunction(StreamWriter output, int functionIndex)
         {
-            FunctionBody body = WasmFile.FunctionBodies[functionIndex];
-            FunctionSignature signature = WasmFile.FunctionTypes[WasmFile.Functions[functionIndex]];
+            FunctionBody body = WasmModule.FunctionBodies[functionIndex];
+            FunctionSignature signature = WasmModule.FunctionTypes[WasmModule.Functions[functionIndex]];
             
             // get IR
-            var context = new IntermediateContext(body, signature, WasmFile, output);
-            List<IntermediateInstruction> instructions = new IntermediateConverter(WasmFile, body).Convert();
+            var context = new IntermediateContext(body, signature, WasmModule, output);
+            List<IntermediateInstruction> instructions = new IntermediateConverter(WasmModule, body).Convert();
 
             output.Write(signature.ToString($"fun_{functionIndex:X8}"));
             output.WriteLine(" {");
@@ -34,7 +34,7 @@ namespace WasmLib.Decompilation
             
             // write return value, if needed
             if (signature.ReturnParameter.Length != 0) {
-                new FakeReturnInstruction().Handle(ref context);
+                new ImplicitReturnInstruction().Handle(ref context);
             }
             
             output.WriteLine("}");

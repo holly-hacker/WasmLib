@@ -8,12 +8,12 @@ namespace WasmLib.Decompilation.Intermediate
 {
     public class IntermediateConverter
     {
-        private readonly WasmFile wasmFile;
+        private readonly WasmModule wasmModule;
         private readonly FunctionBody function;
 
-        public IntermediateConverter(WasmFile wasmFile, FunctionBody function)
+        public IntermediateConverter(WasmModule wasmModule, FunctionBody function)
         {
-            this.wasmFile = wasmFile;
+            this.wasmModule = wasmModule;
             this.function = function;
         }
 
@@ -30,25 +30,25 @@ namespace WasmLib.Decompilation.Intermediate
             for (; i < function.Instructions.Length; i++) {
                 Instruction instruction = function.Instructions[i];
                 switch (instruction.OpCode) {
-                    case InstructionKind.End:
-                    case InstructionKind.Else when allowElse:
+                    case OpCode.End:
+                    case OpCode.Else when allowElse:
                         return list;
-                    case InstructionKind.Else:
+                    case OpCode.Else:
                         throw new Exception($"Unexpected `{instruction}` instruction, else is not allowed in the current block");
-                    case InstructionKind.Block:
-                    case InstructionKind.Loop:
-                    case InstructionKind.If:
+                    case OpCode.Block:
+                    case OpCode.Loop:
+                    case OpCode.If:
                         i++;
-                        List<IntermediateInstruction> list1 = ConvertBlock(ref i, instruction.OpCode == InstructionKind.If);
+                        List<IntermediateInstruction> list1 = ConvertBlock(ref i, instruction.OpCode == OpCode.If);
                         List<IntermediateInstruction>? list2 = null;
 
                         var instr = function.Instructions[i];
-                        if (instr.OpCode == InstructionKind.Else) {
+                        if (instr.OpCode == OpCode.Else) {
                             i++;
                             list2 = ConvertBlock(ref i);
                         }
                         else {
-                            Debug.Assert(instr.OpCode == InstructionKind.End);
+                            Debug.Assert(instr.OpCode == OpCode.End);
                         }
                         
                         list.Add(new ControlBlockInstruction(instruction, list1, list2));
@@ -70,216 +70,216 @@ namespace WasmLib.Decompilation.Intermediate
         public IntermediateInstruction? ConvertInstruction(Instruction instruction)
         {
             switch (instruction.OpCode) {
-                case InstructionKind.Unreachable:
+                case OpCode.Unreachable:
                     return new UnreachableInstruction();
-                case InstructionKind.Nop:
+                case OpCode.Nop:
                     return null;
                 
-                case InstructionKind.Block:
-                case InstructionKind.Loop:
-                case InstructionKind.If:
+                case OpCode.Block:
+                case OpCode.Loop:
+                case OpCode.If:
                     throw new Exception($"Encountered control flow instruction '{instruction}' in wrong loop");
-                case InstructionKind.Else:
-                case InstructionKind.End:
+                case OpCode.Else:
+                case OpCode.End:
                     throw new Exception($"Encountered unexpected control flow instruction '{instruction}'");
                 
-                case InstructionKind.Br:
-                case InstructionKind.BrIf:
-                case InstructionKind.BrTable:
+                case OpCode.Br:
+                case OpCode.BrIf:
+                case OpCode.BrTable:
                     return new BranchInstruction(instruction);
                 
-                case InstructionKind.Return:
+                case OpCode.Return:
                     return new ReturnInstruction();
-                case InstructionKind.Call:
-                case InstructionKind.CallIndirect:
-                    return new CallInstruction(wasmFile, instruction);
+                case OpCode.Call:
+                case OpCode.CallIndirect:
+                    return new CallInstruction(wasmModule, instruction);
                 
-                case InstructionKind.Drop:
+                case OpCode.Drop:
                     return new DropInstruction();
-                case InstructionKind.Select:
+                case OpCode.Select:
                     return new SelectInstruction();
                 
-                case InstructionKind.LocalGet:
-                case InstructionKind.LocalSet:
-                case InstructionKind.LocalTee:
-                case InstructionKind.GlobalGet:
-                case InstructionKind.GlobalSet:
+                case OpCode.LocalGet:
+                case OpCode.LocalSet:
+                case OpCode.LocalTee:
+                case OpCode.GlobalGet:
+                case OpCode.GlobalSet:
                     return new VariableInstruction(instruction);
 
-                case InstructionKind.I32Load:
-                case InstructionKind.I64Load:
-                case InstructionKind.F32Load:
-                case InstructionKind.F64Load:
-                case InstructionKind.I32Load8S:
-                case InstructionKind.I32Load8U:
-                case InstructionKind.I32Load16S:
-                case InstructionKind.I32Load16U:
-                case InstructionKind.I64Load8S:
-                case InstructionKind.I64Load8U:
-                case InstructionKind.I64Load16S:
-                case InstructionKind.I64Load16U:
-                case InstructionKind.I64Load32S:
-                case InstructionKind.I64Load32U:
-                case InstructionKind.I32Store:
-                case InstructionKind.I64Store:
-                case InstructionKind.F32Store:
-                case InstructionKind.F64Store:
-                case InstructionKind.I32Store8:
-                case InstructionKind.I32Store16:
-                case InstructionKind.I64Store8:
-                case InstructionKind.I64Store16:
-                case InstructionKind.I64Store32:
+                case OpCode.I32Load:
+                case OpCode.I64Load:
+                case OpCode.F32Load:
+                case OpCode.F64Load:
+                case OpCode.I32Load8S:
+                case OpCode.I32Load8U:
+                case OpCode.I32Load16S:
+                case OpCode.I32Load16U:
+                case OpCode.I64Load8S:
+                case OpCode.I64Load8U:
+                case OpCode.I64Load16S:
+                case OpCode.I64Load16U:
+                case OpCode.I64Load32S:
+                case OpCode.I64Load32U:
+                case OpCode.I32Store:
+                case OpCode.I64Store:
+                case OpCode.F32Store:
+                case OpCode.F64Store:
+                case OpCode.I32Store8:
+                case OpCode.I32Store16:
+                case OpCode.I64Store8:
+                case OpCode.I64Store16:
+                case OpCode.I64Store32:
                     return new MemoryInstruction(instruction);
                 
-                case InstructionKind.MemoryGrow:
-                case InstructionKind.MemorySize:
+                case OpCode.MemoryGrow:
+                case OpCode.MemorySize:
                     return new MemorySizeInstruction(instruction);
                 
-                case InstructionKind.I32Const:
-                case InstructionKind.I64Const:
-                case InstructionKind.F32Const:
-                case InstructionKind.F64Const:
+                case OpCode.I32Const:
+                case OpCode.I64Const:
+                case OpCode.F32Const:
+                case OpCode.F64Const:
                     return new ConstInstruction(instruction);
                 
-                case InstructionKind.I32Clz:
-                case InstructionKind.I32Ctz:
-                case InstructionKind.I32Popcnt:
-                case InstructionKind.I64Clz:
-                case InstructionKind.I64Ctz:
-                case InstructionKind.I64Popcnt:
+                case OpCode.I32Clz:
+                case OpCode.I32Ctz:
+                case OpCode.I32Popcnt:
+                case OpCode.I64Clz:
+                case OpCode.I64Ctz:
+                case OpCode.I64Popcnt:
                     
-                case InstructionKind.F32Abs:
-                case InstructionKind.F32Neg:
-                case InstructionKind.F32Ceil:
-                case InstructionKind.F32Floor:
-                case InstructionKind.F32Trunc:
-                case InstructionKind.F32Nearest:
-                case InstructionKind.F32Sqrt:
-                case InstructionKind.F64Abs:
-                case InstructionKind.F64Neg:
-                case InstructionKind.F64Ceil:
-                case InstructionKind.F64Floor:
-                case InstructionKind.F64Trunc:
-                case InstructionKind.F64Nearest:
-                case InstructionKind.F64Sqrt:
+                case OpCode.F32Abs:
+                case OpCode.F32Neg:
+                case OpCode.F32Ceil:
+                case OpCode.F32Floor:
+                case OpCode.F32Trunc:
+                case OpCode.F32Nearest:
+                case OpCode.F32Sqrt:
+                case OpCode.F64Abs:
+                case OpCode.F64Neg:
+                case OpCode.F64Ceil:
+                case OpCode.F64Floor:
+                case OpCode.F64Trunc:
+                case OpCode.F64Nearest:
+                case OpCode.F64Sqrt:
                     return new UnaryOperationInstruction(instruction);
                 
-                case InstructionKind.I32Add:
-                case InstructionKind.I64Add:
-                case InstructionKind.F32Add:
-                case InstructionKind.F64Add:
-                case InstructionKind.I32Sub:
-                case InstructionKind.I64Sub:
-                case InstructionKind.F32Sub:
-                case InstructionKind.F64Sub:
-                case InstructionKind.I32Mul:
-                case InstructionKind.I64Mul:
-                case InstructionKind.F32Mul:
-                case InstructionKind.F64Mul:
+                case OpCode.I32Add:
+                case OpCode.I64Add:
+                case OpCode.F32Add:
+                case OpCode.F64Add:
+                case OpCode.I32Sub:
+                case OpCode.I64Sub:
+                case OpCode.F32Sub:
+                case OpCode.F64Sub:
+                case OpCode.I32Mul:
+                case OpCode.I64Mul:
+                case OpCode.F32Mul:
+                case OpCode.F64Mul:
                     
-                case InstructionKind.I32DivS:
-                case InstructionKind.I32DivU:
-                case InstructionKind.I32RemS:
-                case InstructionKind.I32RemU:
-                case InstructionKind.I64DivS:
-                case InstructionKind.I64DivU:
-                case InstructionKind.I64RemS:
-                case InstructionKind.I64RemU:
-                case InstructionKind.I32And:
-                case InstructionKind.I64And:
-                case InstructionKind.I32Or:
-                case InstructionKind.I64Or:
-                case InstructionKind.I32Xor:
-                case InstructionKind.I64Xor:
-                case InstructionKind.I32Shl:
-                case InstructionKind.I64Shl:
-                case InstructionKind.I32ShrS:
-                case InstructionKind.I64ShrS:
-                case InstructionKind.I32ShrU:
-                case InstructionKind.I64ShrU:
-                case InstructionKind.I32Rotl:
-                case InstructionKind.I64Rotl:
-                case InstructionKind.I32Rotr:
-                case InstructionKind.I64Rotr:
+                case OpCode.I32DivS:
+                case OpCode.I32DivU:
+                case OpCode.I32RemS:
+                case OpCode.I32RemU:
+                case OpCode.I64DivS:
+                case OpCode.I64DivU:
+                case OpCode.I64RemS:
+                case OpCode.I64RemU:
+                case OpCode.I32And:
+                case OpCode.I64And:
+                case OpCode.I32Or:
+                case OpCode.I64Or:
+                case OpCode.I32Xor:
+                case OpCode.I64Xor:
+                case OpCode.I32Shl:
+                case OpCode.I64Shl:
+                case OpCode.I32ShrS:
+                case OpCode.I64ShrS:
+                case OpCode.I32ShrU:
+                case OpCode.I64ShrU:
+                case OpCode.I32Rotl:
+                case OpCode.I64Rotl:
+                case OpCode.I32Rotr:
+                case OpCode.I64Rotr:
                     
-                case InstructionKind.F32Div:
-                case InstructionKind.F32Min:
-                case InstructionKind.F32Max:
-                case InstructionKind.F32Copysign:
-                case InstructionKind.F64Div:
-                case InstructionKind.F64Min:
-                case InstructionKind.F64Max:
-                case InstructionKind.F64Copysign:
+                case OpCode.F32Div:
+                case OpCode.F32Min:
+                case OpCode.F32Max:
+                case OpCode.F32Copysign:
+                case OpCode.F64Div:
+                case OpCode.F64Min:
+                case OpCode.F64Max:
+                case OpCode.F64Copysign:
                     return new BinaryOperationInstruction(instruction);
 
 
-                case InstructionKind.I32Eq:
-                case InstructionKind.I32Ne:
-                case InstructionKind.I32LtS:
-                case InstructionKind.I32LtU:
-                case InstructionKind.I32GtS:
-                case InstructionKind.I32GtU:
-                case InstructionKind.I32LeS:
-                case InstructionKind.I32LeU:
-                case InstructionKind.I32GeS:
-                case InstructionKind.I32GeU:
+                case OpCode.I32Eq:
+                case OpCode.I32Ne:
+                case OpCode.I32LtS:
+                case OpCode.I32LtU:
+                case OpCode.I32GtS:
+                case OpCode.I32GtU:
+                case OpCode.I32LeS:
+                case OpCode.I32LeU:
+                case OpCode.I32GeS:
+                case OpCode.I32GeU:
 
-                case InstructionKind.I64Eq:
-                case InstructionKind.I64Ne:
-                case InstructionKind.I64LtS:
-                case InstructionKind.I64LtU:
-                case InstructionKind.I64GtS:
-                case InstructionKind.I64GtU:
-                case InstructionKind.I64LeS:
-                case InstructionKind.I64LeU:
-                case InstructionKind.I64GeS:
-                case InstructionKind.I64GeU:
+                case OpCode.I64Eq:
+                case OpCode.I64Ne:
+                case OpCode.I64LtS:
+                case OpCode.I64LtU:
+                case OpCode.I64GtS:
+                case OpCode.I64GtU:
+                case OpCode.I64LeS:
+                case OpCode.I64LeU:
+                case OpCode.I64GeS:
+                case OpCode.I64GeU:
 
-                case InstructionKind.F32Eq:
-                case InstructionKind.F32Ne:
-                case InstructionKind.F32Lt:
-                case InstructionKind.F32Gt:
-                case InstructionKind.F32Le:
-                case InstructionKind.F32Ge:
+                case OpCode.F32Eq:
+                case OpCode.F32Ne:
+                case OpCode.F32Lt:
+                case OpCode.F32Gt:
+                case OpCode.F32Le:
+                case OpCode.F32Ge:
 
-                case InstructionKind.F64Eq:
-                case InstructionKind.F64Ne:
-                case InstructionKind.F64Lt:
-                case InstructionKind.F64Gt:
-                case InstructionKind.F64Le:
-                case InstructionKind.F64Ge:
+                case OpCode.F64Eq:
+                case OpCode.F64Ne:
+                case OpCode.F64Lt:
+                case OpCode.F64Gt:
+                case OpCode.F64Le:
+                case OpCode.F64Ge:
                 return new ComparisonOperationInstruction(instruction);
                 
-                case InstructionKind.I32Eqz:
-                case InstructionKind.I64Eqz:
+                case OpCode.I32Eqz:
+                case OpCode.I64Eqz:
                     return new TestOperationInstruction(instruction);
 
-                case InstructionKind.I32WrapI64:
-                case InstructionKind.I32TruncF32S:
-                case InstructionKind.I32TruncF32U:
-                case InstructionKind.I32TruncF64S:
-                case InstructionKind.I32TruncF64U:
-                case InstructionKind.I64ExtendI32S:
-                case InstructionKind.I64ExtendI32U:
-                case InstructionKind.I64TruncF32S:
-                case InstructionKind.I64TruncF32U:
-                case InstructionKind.I64TruncF64S:
-                case InstructionKind.I64TruncF64U:
-                case InstructionKind.F32ConvertI32S:
-                case InstructionKind.F32ConvertI32U:
-                case InstructionKind.F32ConvertI64S:
-                case InstructionKind.F32ConvertI64U:
-                case InstructionKind.F32DemoteF64:
-                case InstructionKind.F64ConvertI32S:
-                case InstructionKind.F64ConvertI32U:
-                case InstructionKind.F64ConvertI64S:
-                case InstructionKind.F64ConvertI64U:
-                case InstructionKind.F64PromoteF32:
-                case InstructionKind.I32ReinterpretF32:
-                case InstructionKind.I64ReinterpretF64:
-                case InstructionKind.F32ReinterpretI32:
-                case InstructionKind.F64ReinterpretI64:
-                    return new ConversionInstruction(instruction);
+                case OpCode.I32WrapI64:
+                case OpCode.I32TruncF32S:
+                case OpCode.I32TruncF32U:
+                case OpCode.I32TruncF64S:
+                case OpCode.I32TruncF64U:
+                case OpCode.I64ExtendI32S:
+                case OpCode.I64ExtendI32U:
+                case OpCode.I64TruncF32S:
+                case OpCode.I64TruncF32U:
+                case OpCode.I64TruncF64S:
+                case OpCode.I64TruncF64U:
+                case OpCode.F32ConvertI32S:
+                case OpCode.F32ConvertI32U:
+                case OpCode.F32ConvertI64S:
+                case OpCode.F32ConvertI64U:
+                case OpCode.F32DemoteF64:
+                case OpCode.F64ConvertI32S:
+                case OpCode.F64ConvertI32U:
+                case OpCode.F64ConvertI64S:
+                case OpCode.F64ConvertI64U:
+                case OpCode.F64PromoteF32:
+                case OpCode.I32ReinterpretF32:
+                case OpCode.I64ReinterpretF64:
+                case OpCode.F32ReinterpretI32:
+                case OpCode.F64ReinterpretI64:
+                    return new ConversionOperatorInstruction(instruction);
 
                 default:
                     throw new NotImplementedException($"Unimplemented instruction {instruction}");

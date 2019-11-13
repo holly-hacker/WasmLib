@@ -6,34 +6,34 @@ namespace WasmLib.Decompilation
 {
     public class DisassemblingDecompiler : IDecompiler
     {
-        public WasmFile WasmFile { get; private set; }
+        public WasmModule WasmModule { get; private set; }
 
-        public DisassemblingDecompiler(WasmFile wasmFile)
+        public DisassemblingDecompiler(WasmModule wasmModule)
         {
-            WasmFile = wasmFile;
+            WasmModule = wasmModule;
         }
 
         public void DecompileFunction(StreamWriter output, int functionIndex)
         {
-            var function = WasmFile.FunctionBodies[functionIndex];
+            var function = WasmModule.FunctionBodies[functionIndex];
             int indent = 1;
 
-            output.WriteLine($"fun_{functionIndex:X8}: # {WasmFile.FunctionTypes[WasmFile.Functions[functionIndex]]}");
+            output.WriteLine($"fun_{functionIndex:X8}: # {WasmModule.FunctionTypes[WasmModule.Functions[functionIndex]]}");
             foreach (var instruction in function.Instructions)
             {
                 indent += instruction.OpCode switch {
-                    InstructionKind.Else => -1, // temporary
-                    InstructionKind.End => -1,
+                    OpCode.Else => -1, // temporary
+                    OpCode.End => -1,
                     _ => 0,
                 };
                 
                 output.WriteLine(new string('\t', indent) + instruction);
                 
                 indent += instruction.OpCode switch {
-                    InstructionKind.Block => 1,
-                    InstructionKind.Loop => 1,
-                    InstructionKind.If => 1,
-                    InstructionKind.Else => 1,
+                    OpCode.Block => 1,
+                    OpCode.Loop => 1,
+                    OpCode.If => 1,
+                    OpCode.Else => 1,
                     _ => 0,
                 };
             }
