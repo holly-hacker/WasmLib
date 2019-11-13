@@ -2,3 +2,4 @@ bin/
 obj/
 /packages/
 .idea
+WasmLib.sln.DotSettings.user
