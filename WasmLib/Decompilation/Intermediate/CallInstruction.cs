@@ -14,7 +14,7 @@ namespace WasmLib.Decompilation.Intermediate
         public bool IsIndirect { get; }
         public FunctionSignature Signature { get; }
         
-        public CallInstruction(WasmModule module, Instruction instruction)
+        public CallInstruction(WasmModule module, in Instruction instruction)
         {
             uint index = instruction.UIntOperand;
 

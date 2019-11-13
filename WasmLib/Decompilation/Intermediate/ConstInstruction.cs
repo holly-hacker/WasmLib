@@ -10,7 +10,7 @@ namespace WasmLib.Decompilation.Intermediate
         public ValueKind Type { get; }
         public ulong RawOperand { get; }
         
-        public ConstInstruction(Instruction instruction)
+        public ConstInstruction(in Instruction instruction)
         {
             Type = instruction.OpCode switch {
                 OpCode.I32Const => ValueKind.I32,

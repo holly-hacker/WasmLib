@@ -11,7 +11,7 @@ namespace WasmLib.Decompilation.Intermediate
         public int Label { get; }
         public int[]? Labels { get; }
         
-        public BranchInstruction(Instruction instruction)
+        public BranchInstruction(in Instruction instruction)
         {
             Kind = instruction.OpCode switch {
                 OpCode.Br => BranchKind.Normal,

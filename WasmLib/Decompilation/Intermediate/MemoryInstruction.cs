@@ -15,7 +15,7 @@ namespace WasmLib.Decompilation.Intermediate
         public uint Offset { get; }
         public uint Alignment { get; }
         
-        public MemoryInstruction(Instruction instruction)
+        public MemoryInstruction(in Instruction instruction)
         {
             (Action, Type, Casting) = instruction.OpCode switch {
                 OpCode.I32Load => (ActionKind.Load, ValueKind.I32, CastingKind.Same),

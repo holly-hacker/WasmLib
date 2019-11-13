@@ -1,6 +1,6 @@
 namespace WasmLib.FileFormat.Instructions
 {
-    public partial struct Instruction
+    public readonly partial struct Instruction
     {
         public static OperandKind GetOperandKind(OpCode instr)
         {

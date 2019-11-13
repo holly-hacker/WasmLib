@@ -12,7 +12,7 @@ namespace WasmLib.Decompilation.Intermediate
         public OperationKind Operation { get; }
         public bool? IsSigned { get; }
         
-        public BinaryOperationInstruction(Instruction instruction)
+        public BinaryOperationInstruction(in Instruction instruction)
         {
             (Type, Operation, IsSigned) = instruction.OpCode switch {
                 // both

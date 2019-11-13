@@ -14,7 +14,7 @@ namespace WasmLib.Decompilation.Intermediate
         public ValueKind SourceType { get; }
         public bool? IsSigned { get; }
 
-        public ConversionOperatorInstruction(Instruction instruction)
+        public ConversionOperatorInstruction(in Instruction instruction)
         {
             (Operation, TargetType, SourceType, IsSigned) = instruction.OpCode switch {
                 OpCode.I32WrapI64 => (OperationKind.Wrap, ValueKind.I32, ValueKind.I64, (bool?)null),

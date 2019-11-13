@@ -11,7 +11,7 @@ namespace WasmLib.Decompilation.Intermediate
         public ValueKind Type { get; }
         public OperationKind Operation { get; }
         
-        public TestOperationInstruction(Instruction instruction)
+        public TestOperationInstruction(in Instruction instruction)
         {
             (Type, Operation) = instruction.OpCode switch {
                 OpCode.I32Eqz => (ValueKind.I32, OperationKind.Eqz),

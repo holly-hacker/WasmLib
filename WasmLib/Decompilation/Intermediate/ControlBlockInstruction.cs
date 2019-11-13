@@ -14,7 +14,7 @@ namespace WasmLib.Decompilation.Intermediate
         public IReadOnlyList<IntermediateInstruction> Block1 { get; }
         public IReadOnlyList<IntermediateInstruction>? Block2 { get; }
         
-        public ControlBlockInstruction(Instruction instruction, IReadOnlyList<IntermediateInstruction> block1, IReadOnlyList<IntermediateInstruction>? block2)
+        public ControlBlockInstruction(in Instruction instruction, IReadOnlyList<IntermediateInstruction> block1, IReadOnlyList<IntermediateInstruction>? block2)
         {
             Kind = instruction.OpCode switch {
                 OpCode.Block => ControlBlockKind.Block,

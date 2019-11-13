@@ -3,7 +3,7 @@ using WasmLib.Utils;
 
 namespace WasmLib.FileFormat
 {
-    public struct Limits
+    public readonly struct Limits
     {
         public uint Min { get; }
         public uint? Max { get; }

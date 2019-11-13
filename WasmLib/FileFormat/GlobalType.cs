@@ -3,7 +3,7 @@ using WasmLib.Utils;
 
 namespace WasmLib.FileFormat
 {
-    public struct GlobalType
+    public readonly struct GlobalType
     {
         public bool Mutable { get; }
         public ValueKind ValueKind { get; }

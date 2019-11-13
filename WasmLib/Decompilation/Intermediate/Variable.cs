@@ -3,16 +3,19 @@ using WasmLib.Utils;
 
 namespace WasmLib.Decompilation.Intermediate
 {
-    public struct Variable
+    public readonly struct Variable
     {
-        public ValueKind Type { get; private set; }
-        private uint index;
+        public ValueKind Type { get; }
+        public readonly uint Index;
 
-        public static Variable Stack(ValueKind type, uint index) => new Variable {
-            Type = type,
-            index = index,
-        };
+        private Variable(ValueKind type, uint index)
+        {
+            Type = type;
+            Index = index;
+        }
 
-        public override string ToString() => $"var{index}_{EnumUtils.GetDescription(Type)}";
+        public static Variable Stack(ValueKind type, uint index) => new Variable(type, index);
+
+        public override string ToString() => $"var{Index}_{EnumUtils.GetDescription(Type)}";
     }
 }

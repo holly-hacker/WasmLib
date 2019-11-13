@@ -11,7 +11,7 @@ namespace WasmLib.Decompilation.Intermediate
         public ValueKind Type { get; }
         public OperationKind Operation { get; }
 
-        public UnaryOperationInstruction(Instruction instruction)
+        public UnaryOperationInstruction(in Instruction instruction)
         {
             (Type, Operation) = instruction.OpCode switch {
                 OpCode.I32Clz => (ValueKind.I32, OperationKind.Clz),

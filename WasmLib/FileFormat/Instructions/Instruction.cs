@@ -4,9 +4,9 @@ using WasmLib.Utils;
 
 namespace WasmLib.FileFormat.Instructions
 {
-    public partial struct Instruction
+    public readonly partial struct Instruction
     {
-        public OpCode OpCode { get; private set; }
+        public OpCode OpCode { get; }
 
         private readonly ulong operand;
         private readonly object? operandObject; // NOTE: this is only ever a uint[], could be specified
