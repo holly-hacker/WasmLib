@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using WasmLib.FileFormat;
 using WasmLib.FileFormat.Instructions;
@@ -24,17 +23,7 @@ namespace WasmLib.Decompilation.Intermediate
             };
             Index = instruction.UIntOperand;
         }
-        
-        public VariableInstruction(TargetKind target, ActionKind action)
-        {
-            if (target != TargetKind.Global && action == ActionKind.Tee) {
-                throw new ArgumentException("Tried creating IR instruction for global.tee, which does not exist");
-            }
 
-            Target = target;
-            Action = action;
-        }
-        
         public override void Handle(ref IntermediateContext context)
         {
             // NOTE: could make this a bit more DRY
@@ -53,7 +42,7 @@ namespace WasmLib.Decompilation.Intermediate
                     context.WriteFull($"local[{Index}] = {popped}");
                 }
                 else if (Action == ActionKind.Tee) {
-                    var peeked = context.Stack.Peek();
+                    var peeked = context.Peek();
                     Debug.Assert(local == peeked.Type, $"peeked {peeked} ({peeked.Type}), expected {local}");
                     context.WriteFull($"local[{Index}] = {peeked}");
                 }

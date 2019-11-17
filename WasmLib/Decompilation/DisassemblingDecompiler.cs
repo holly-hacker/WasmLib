@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using WasmLib.FileFormat;
 using WasmLib.FileFormat.Instructions;
 
 namespace WasmLib.Decompilation
@@ -15,11 +16,12 @@ namespace WasmLib.Decompilation
 
         public void DecompileFunction(StreamWriter output, int functionIndex)
         {
-            var function = WasmModule.FunctionBodies[functionIndex];
+            FunctionBody body = WasmModule.FunctionBodies[functionIndex];
+            FunctionSignature signature = WasmModule.FunctionTypes[WasmModule.Functions[functionIndex]];
             int indent = 1;
 
-            output.WriteLine($"fun_{functionIndex:X8}: # {WasmModule.FunctionTypes[WasmModule.Functions[functionIndex]]}");
-            foreach (var instruction in function.Instructions)
+            output.WriteLine($"fun_{functionIndex:X8}: # {signature}");
+            foreach (var instruction in body.Instructions)
             {
                 indent += instruction.OpCode switch {
                     OpCode.Else => -1, // temporary
