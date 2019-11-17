@@ -22,6 +22,7 @@ namespace WasmLib
         public DataSegment[] DataSegments { get; private set; } = new DataSegment[0];
         
         public int ImportedFunctionCount { get; private set; }
+        public GlobalType[] ImportedGlobals { get; private set; } = new GlobalType[0];
 
         private WasmModule() { }
 
@@ -88,6 +89,13 @@ namespace WasmLib
             }
 
             file.ImportedFunctionCount = file.Imports.Count(x => x.Kind == ImportKind.TypeIndex);
+            file.ImportedGlobals = file.Imports
+                .Where(x => x.Kind == ImportKind.GlobalType)
+                .Select(x =>
+                    x.GlobalType ??
+                    throw new Exception(
+                        $"{nameof(Import.GlobalType)} had no value, but {nameof(Import.Kind)} was {nameof(ImportKind.GlobalType)}"))
+                .ToArray();
 
             return file;
         }

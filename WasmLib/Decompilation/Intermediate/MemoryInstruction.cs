@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Diagnostics;
 using WasmLib.FileFormat;
 using WasmLib.FileFormat.Instructions;
 using WasmLib.Utils;
@@ -50,30 +49,22 @@ namespace WasmLib.Decompilation.Intermediate
             Alignment = (uint)((operand & 0xFFFFFFFF00000000) >> 32);
         }
 
-        public override void Handle(ref IntermediateContext context)
-        {
-            // TODO: Casting
-            if (Action == ActionKind.Load && Casting != CastingKind.Same) {
-                context.WriteFull($"// DECOMPILER WARNING: casting of type {Casting}");
-            }
+        public override ValueKind[] PopTypes => Action == ActionKind.Store ? new[] {Type, ValueKind.I32} : new[] {ValueKind.I32}; 
+        public override ValueKind[] PushTypes => Action == ActionKind.Load ? new[] {Type} : new ValueKind[0];
+
+        // TODO: handle casting
+        protected override string OperationStringFormat {
+            get {
+                string dereference = $"*({EnumUtils.GetDescription(Type)}*)({{1}} + 0x{Offset:X})"; // NOTE: could be optimized
+                
+                string s = $"{(Action == ActionKind.Load ? $"{{0}} = {dereference}" : $"{dereference} = {{0}}")} // Alignment: 0x{1 << (int)Alignment:X}";
             
-            Variable param = default;
+                if (Action == ActionKind.Load && Casting != CastingKind.Same) {
+                    s += $", DECOMPILER WARNING: casting of type {Casting}";
+                }
 
-            if (Action == ActionKind.Store) {
-                param = context.Pop();
-                Debug.Assert(param.Type == Type);
+                return s;
             }
-
-            var popped = context.Pop();
-            Debug.Assert(popped.Type == ValueKind.I32);
-
-            if (Action == ActionKind.Load) {
-                param = context.Push(Type);
-            }
-
-            string dereference = $"*({EnumUtils.GetDescription(Type)}*)({popped} + 0x{Offset:X})"; // NOTE: could be optimized
-            
-            context.WriteFull($"{(Action == ActionKind.Load ? $"{param} = {dereference}" : $"{dereference} = {param}")} // Alignment: 0x{1 << (int)Alignment:X}");
         }
 
         public enum ActionKind

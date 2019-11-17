@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using WasmLib.FileFormat;
 using WasmLib.FileFormat.Instructions;
 using WasmLib.Utils;
@@ -45,23 +44,21 @@ namespace WasmLib.Decompilation.Intermediate
                 _ => throw new WrongInstructionPassedException(instruction, nameof(ConversionOperatorInstruction)),
             };
         }
-        
-        public override void Handle(ref IntermediateContext context)
-        {
-            var popped = context.Pop();
-            Debug.Assert(popped.Type == SourceType);
 
-            var pushed = context.Push(TargetType);
-            var targetString = EnumUtils.GetDescription(TargetType);
+        public override ValueKind[] PopTypes => new[] {SourceType};
+        public override ValueKind[] PushTypes => new[] {TargetType};
 
-            if (Operation == OperationKind.Reinterpret) {
-                context.WriteFull($"{pushed} = *({targetString}*)&{popped}");
-            }
-            else if (!IsSigned.HasValue) {
-                context.WriteFull($"{pushed} = ({targetString}){popped}");
-            }
-            else {
-                context.WriteFull($"{pushed} = ({targetString}){popped} // signed: {IsSigned}");
+        protected override string OperationStringFormat {
+            get {
+                string targetString = EnumUtils.GetDescription(TargetType);
+
+                if (Operation == OperationKind.Reinterpret) {
+                    return $"{{0}} = *({targetString}*)&{{1}}";
+                }
+
+                return !IsSigned.HasValue
+                    ? $"{{0}} = ({targetString}){{1}}"
+                    : $"{{0}} = ({targetString}){{1}} // signed: {IsSigned}";
             }
         }
 

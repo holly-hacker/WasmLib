@@ -10,11 +10,13 @@ namespace WasmLib.Decompilation.Intermediate
     {
         private readonly WasmModule wasmModule;
         private readonly FunctionBody function;
+        private readonly FunctionSignature signature;
 
-        public IntermediateConverter(WasmModule wasmModule, FunctionBody function)
+        public IntermediateConverter(WasmModule wasmModule, FunctionBody function, FunctionSignature signature)
         {
             this.wasmModule = wasmModule;
             this.function = function;
+            this.signature = signature;
         }
 
         public List<IntermediateInstruction> Convert()
@@ -89,10 +91,10 @@ namespace WasmLib.Decompilation.Intermediate
                     return new BranchInstruction(instruction);
                 
                 case OpCode.Return:
-                    return new ReturnInstruction();
+                    return new ReturnInstruction(signature);
                 case OpCode.Call:
                 case OpCode.CallIndirect:
-                    return new CallInstruction(wasmModule, instruction);
+                    return new CallInstruction(instruction, wasmModule);
                 
                 case OpCode.Drop:
                     return new DropInstruction();
@@ -104,7 +106,7 @@ namespace WasmLib.Decompilation.Intermediate
                 case OpCode.LocalTee:
                 case OpCode.GlobalGet:
                 case OpCode.GlobalSet:
-                    return new VariableInstruction(instruction);
+                    return new VariableInstruction(instruction, wasmModule, function, signature);
 
                 case OpCode.I32Load:
                 case OpCode.I64Load:

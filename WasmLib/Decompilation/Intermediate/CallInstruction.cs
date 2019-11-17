@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using WasmLib.FileFormat;
@@ -10,11 +9,14 @@ namespace WasmLib.Decompilation.Intermediate
 {
     public class CallInstruction : IntermediateInstruction
     {
-        public string? Name { get; private set; }
+        public string? Name { get; }
         public bool IsIndirect { get; }
         public FunctionSignature Signature { get; }
+
+        public override ValueKind[] PopTypes => (IsIndirect ? new[] {ValueKind.I32} : new ValueKind[0]).Concat(Signature.Parameters.Reverse()).ToArray();
+        public override ValueKind[] PushTypes => Signature.ReturnParameter.Reverse().ToArray();
         
-        public CallInstruction(WasmModule module, in Instruction instruction)
+        public CallInstruction(in Instruction instruction, WasmModule module)
         {
             uint index = instruction.UIntOperand;
 
@@ -42,35 +44,19 @@ namespace WasmLib.Decompilation.Intermediate
                 throw new WrongInstructionPassedException(instruction, nameof(CallInstruction));
             }
         }
-        
-        public override void Handle(ref IntermediateContext context)
-        {
-            if (Signature.ReturnParameter.Length > 1) {
-                throw new Exception("Not implemented");
-            }
 
-            if (IsIndirect) {
-                // could be resolved if we know this value
-                Name = $"ELEM[{context.Pop()}]";
-            }
-            
-            var paramList = new List<Variable>();
+        protected override string OperationStringFormat {
+            get {
+                if (Signature.ReturnParameter.Length > 1) {
+                    throw new Exception("Not implemented");
+                }
 
-            // pop parameters (in reverse)
-            foreach (ValueKind param in Signature.Parameters.Reverse()) {
-                var popped = context.Pop();
-                Debug.Assert(popped.Type == param);
-                paramList.Add(popped);
-            }
+                string name = IsIndirect ? $"ELEM[{{{PushCount}}}]" : Name!;
+                string parameters = string.Join(", ", Enumerable.Range(PushCount + (IsIndirect ? 1 : 0), PopCount - (IsIndirect ? 1 : 0)).Select(i => $"{{{i}}}"));
 
-            string parameters = string.Join(", ", paramList); // TODO: check order
-
-            if (Signature.ReturnParameter.Length == 1) {
-                var pushed = context.Push(Signature.ReturnParameter[0]);
-                context.WriteFull($"{pushed} = {Name}({parameters})");
-            }
-            else {
-                context.WriteFull($"{Name}({parameters})");
+                return Signature.ReturnParameter.Length == 1
+                    ? $"{{0}} = {name}({parameters})"
+                    : $"{name}({parameters})";
             }
         }
     }

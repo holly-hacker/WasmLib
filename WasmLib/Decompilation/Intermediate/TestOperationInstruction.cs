@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Diagnostics;
 using WasmLib.FileFormat;
 using WasmLib.FileFormat.Instructions;
 using WasmLib.Utils;
@@ -20,15 +19,10 @@ namespace WasmLib.Decompilation.Intermediate
             };
         }
 
-        public override void Handle(ref IntermediateContext context)
-        {
-            var popped = context.Pop();
-            Debug.Assert(popped.Type == Type, $"Popped operand of type {popped.Type} in {Type}{Operation} instruction");
+        public override ValueKind[] PopTypes => new[] {Type};
+        public override ValueKind[] PushTypes => new[] {ValueKind.I32};
 
-            var pushed = context.Push(ValueKind.I32);
-            
-            context.WriteFull($"{pushed} = {string.Format(EnumUtils.GetDescription(Operation), popped)}");
-        }
+        protected override string OperationStringFormat => $"{{0}} = {string.Format(EnumUtils.GetDescription(Operation), "{1}")}";
 
         public enum OperationKind
         {

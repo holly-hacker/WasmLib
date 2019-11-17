@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using WasmLib.FileFormat;
 using WasmLib.FileFormat.Instructions;
 using WasmLib.Utils;
@@ -10,9 +13,20 @@ namespace WasmLib.Decompilation.Intermediate
         public TargetKind Target { get; }
         public ActionKind Action { get; }
         public uint Index { get; }
+        public ValueKind Type => Target == TargetKind.Local ? GetLocal(Index) : GetGlobal(Index);
 
-        public VariableInstruction(in Instruction instruction)
+        private readonly WasmModule module;
+        private readonly FunctionBody body;
+        private readonly FunctionSignature signature;
+
+        private IEnumerable<ValueKind> Locals => signature.Parameters.Concat(body.Locals);
+        private IEnumerable<ValueKind> Globals => module.ImportedGlobals.Concat(module.Globals.Select(x => x.GlobalType)).Select(x => x.ValueKind);
+
+        public VariableInstruction(in Instruction instruction, WasmModule module, FunctionBody body, FunctionSignature signature)
         {
+            this.module = module;
+            this.body = body;
+            this.signature = signature;
             (Target, Action) = instruction.OpCode switch {
                 OpCode.LocalGet => (TargetKind.Local, ActionKind.Get),
                 OpCode.LocalSet => (TargetKind.Local, ActionKind.Set),
@@ -23,46 +37,32 @@ namespace WasmLib.Decompilation.Intermediate
             };
             Index = instruction.UIntOperand;
         }
+        
+        public override ValueKind[] PopTypes => Action == ActionKind.Get ? new ValueKind[0] : new[] {Type};
+        public override ValueKind[] PushTypes => Action == ActionKind.Set ? new ValueKind[0] : new[] {Type};
 
-        public override void Handle(ref IntermediateContext context)
-        {
-            // NOTE: could make this a bit more DRY
-            // TODO: make output more clear regarding locals and arguments
-            if (Target == TargetKind.Local) {
-                Debug.Assert(context.Locals.Count > Index);
-                ValueKind local = context.GetLocalType(Index);
-
-                if (Action == ActionKind.Get) {
-                    var pushed = context.Push(local);
-                    context.WriteFull($"{pushed} = local[{Index}]");
-                }
-                else if (Action == ActionKind.Set) {
-                    var popped = context.Pop();
-                    Debug.Assert(local == popped.Type, $"popped {popped} ({popped.Type}), expected {local}");
-                    context.WriteFull($"local[{Index}] = {popped}");
-                }
-                else if (Action == ActionKind.Tee) {
-                    var peeked = context.Peek();
-                    Debug.Assert(local == peeked.Type, $"peeked {peeked} ({peeked.Type}), expected {local}");
-                    context.WriteFull($"local[{Index}] = {peeked}");
-                }
-            }
-            else if (Target == TargetKind.Global) {
-                Debug.Assert(context.Globals.Count > Index);
-                ValueKind global = context.GetGlobalType(Index);
-
-                if (Action == ActionKind.Get) {
-                    var pushed = context.Push(global);
-                    context.WriteFull($"{pushed} = global[{Index}]");
-                }
-                else if (Action == ActionKind.Set) {
-                    // NOTE: could check for mutability of global
-                    var popped = context.Pop();
-                    Debug.Assert(global == popped.Type, $"popped {popped} ({popped.Type}), expected {global}");
-                    context.WriteFull($"global[{Index}] = {popped}");
-                }
+        protected override string OperationStringFormat {
+            get {
+                Debug.Assert((Target == TargetKind.Local ? Locals.Count() : Globals.Count()) > Index);
+                return Target switch {
+                    TargetKind.Local => (Action switch {
+                        ActionKind.Get => $"{{0}} = local[{Index}]",
+                        ActionKind.Set => $"local[{Index}] = {{0}}",
+                        ActionKind.Tee => $"{{0}} = local[{Index}] = {{1}}",
+                        _ => throw new ArgumentOutOfRangeException()
+                    }),
+                    TargetKind.Global => (Action switch {
+                        ActionKind.Get => $"{{0}} = global[{Index}]",
+                        ActionKind.Set => $"global[{Index}] = {{0}}",
+                        _ => throw new ArgumentOutOfRangeException()
+                    }),
+                    _ => throw new ArgumentOutOfRangeException()
+                };
             }
         }
+        
+        private ValueKind GetLocal(uint idx) => Locals.Skip((int)idx).First();
+        private ValueKind GetGlobal(uint idx) => Globals.Skip((int)idx).First();
 
         public enum TargetKind
         {

@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using WasmLib.FileFormat;
 using WasmLib.FileFormat.Instructions;
 using WasmLib.Utils;
@@ -18,19 +17,10 @@ namespace WasmLib.Decompilation.Intermediate
             };
         }
 
-        public override void Handle(ref IntermediateContext context)
-        {
-            if (Kind == OpCodeKind.Size) {
-                Variable pushed = context.Push(ValueKind.I32);
-                context.WriteFull($"{pushed} = MEMORY.SIZE / PAGE_SIZE");
-            }
-            else if (Kind == OpCodeKind.Grow) {
-                Variable popped = context.Pop();
-                Debug.Assert(popped.Type == ValueKind.I32);
-                Variable pushed = context.Push(ValueKind.I32);
-                context.WriteFull($"{pushed} = MEMORY.GROW({popped} * PAGE_SIZE)");
-            }
-        }
+        public override ValueKind[] PopTypes => Kind == OpCodeKind.Grow ? new[] {ValueKind.I32} : new ValueKind[0];
+        public override ValueKind[] PushTypes => new[] {ValueKind.I32};
+
+        protected override string OperationStringFormat => Kind == OpCodeKind.Size ? "{0} = MEMORY.SIZE / PAGE_SIZE" : "{0} = MEMORY.GROW({1} * PAGE_SIZE)";
 
         public enum OpCodeKind
         {

@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Diagnostics;
 using WasmLib.FileFormat;
 using WasmLib.FileFormat.Instructions;
 using WasmLib.Utils;
@@ -66,24 +65,17 @@ namespace WasmLib.Decompilation.Intermediate
             };
         }
 
-        public override void Handle(ref IntermediateContext context)
-        {
-            var popped2 = context.Pop();
-            Debug.Assert(popped2.Type == Type, $"Popped operand 2 of type {popped2.Type} in {Type}{Operation} instruction");
-            var popped1 = context.Pop();
-            Debug.Assert(popped1.Type == Type, $"Popped operand 1 of type {popped1.Type} in {Type}{Operation} instruction");
+        public override ValueKind[] PopTypes => new[] {Type, Type};
+        public override ValueKind[] PushTypes => new[] {Type};
 
-            var pushed = context.Push(Type);
-
-            context.WriteFull($"{pushed} = " + Operation switch {
-                OperationKind.Min => $"min({popped1}, {popped2})",
-                OperationKind.Max => $"max({popped1}, {popped2})",
-                OperationKind.CopySign => $"copysign({popped1}, {popped2})",
-                _ => IsSigned.HasValue
-                    ? $"{popped1} {EnumUtils.GetDescription(Operation)} {popped2} // {(IsSigned.Value ? "signed" : "unsigned")} operation"
-                    : $"{popped1} {EnumUtils.GetDescription(Operation)} {popped2}"
-            });
-        }
+        protected override string OperationStringFormat => "{0} = " + Operation switch {
+            OperationKind.Min => "min({2}, {1})",
+            OperationKind.Max => "max({2}, {1})",
+            OperationKind.CopySign => "copysign({2}, {1})",
+            _ => IsSigned.HasValue
+                ? $"{{2}} {EnumUtils.GetDescription(Operation)} {{1}} // {(IsSigned.Value ? "signed" : "unsigned")} operation"
+                : $"{{2}} {EnumUtils.GetDescription(Operation)} {{1}}"
+        };
 
         public enum OperationKind
         {

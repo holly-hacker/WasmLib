@@ -40,9 +40,9 @@ namespace WasmTool
                 _ => throw new Exception("Invalid decompiler type specified"),
             };
 
-            for (int i = arguments.Skip; i < Math.Min(arguments.Skip + arguments.Count, wasmFile.FunctionBodies.Length); i++) {
+            for (uint i = arguments.Skip; i < Math.Min(arguments.Skip + arguments.Count, wasmFile.FunctionBodies.Length); i++) {
                 Debug.WriteLine($"Decompiling function {i} (0x{i:X})");
-                dec.DecompileFunction(w, i);
+                dec.DecompileFunction(w, (int)i);
             }
 
             sw.Stop();

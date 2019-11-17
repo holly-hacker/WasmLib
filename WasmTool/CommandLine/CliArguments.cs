@@ -22,9 +22,9 @@ namespace WasmTool.CommandLine
         public DecompilerKind Decompiler { get; set; }
         
         [OptionParameter("skip", 's')]
-        public int Skip { get; set; }
+        public uint Skip { get; set; }
 
         [OptionParameter("count", 'n')]
-        public int Count { get; set; } = int.MaxValue;
+        public uint Count { get; set; } = (uint)int.MaxValue;
     }
 }

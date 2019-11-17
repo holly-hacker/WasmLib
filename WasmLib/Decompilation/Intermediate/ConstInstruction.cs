@@ -21,25 +21,16 @@ namespace WasmLib.Decompilation.Intermediate
             };
             RawOperand = instruction.ULongOperand;
         }
-        
-        public override void Handle(ref IntermediateContext context)
-        {
-            var pushed = context.Push(Type);
 
-            switch (Type) {
-                case ValueKind.I32:
-                    context.WriteFull($"{pushed} = 0x{(uint)RawOperand:X}");
-                    break;
-                case ValueKind.I64:
-                    context.WriteFull($"{pushed} = 0x{RawOperand:X}");
-                    break;
-                case ValueKind.F32:
-                    context.WriteFull($"{pushed} = {BitConverter.Int32BitsToSingle((int)RawOperand)}");
-                    break;
-                case ValueKind.F64:
-                    context.WriteFull($"{pushed} = {BitConverter.Int64BitsToDouble((long)RawOperand)}");
-                    break;
-            }
-        }
+        public override ValueKind[] PopTypes => new ValueKind[0];
+        public override ValueKind[] PushTypes => new[] {Type};
+
+        protected override string OperationStringFormat => "{0} = " + Type switch {
+            ValueKind.I32 => $"0x{(uint)RawOperand:X}",
+            ValueKind.I64 => $"0x{RawOperand:X}",
+            ValueKind.F32 => $"{BitConverter.Int32BitsToSingle((int)RawOperand)}",
+            ValueKind.F64 => $"{BitConverter.Int64BitsToDouble((long)RawOperand)}",
+            _ => throw new ArgumentOutOfRangeException(),
+        };
     }
 }

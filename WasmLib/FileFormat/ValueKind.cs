@@ -11,5 +11,8 @@ namespace WasmLib.FileFormat
 
         /// <remarks> Only used as block type </remarks>
         Empty = 0x40,
+        
+        /// <remarks> Only used internally </remarks>
+        Any = 0xFF,
     }
 }

@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Diagnostics;
 using WasmLib.FileFormat;
 using WasmLib.FileFormat.Instructions;
 using WasmLib.Utils;
@@ -39,18 +38,11 @@ namespace WasmLib.Decompilation.Intermediate
                 _ => throw new WrongInstructionPassedException(instruction, nameof(UnaryOperationInstruction)),
             };
         }
-        
-        public override void Handle(ref IntermediateContext context)
-        {
-            var popped = context.Pop();
-            Debug.Assert(popped.Type == Type);
 
-            var pushed = context.Push(Type);
+        public override ValueKind[] PopTypes => new[] {Type};
+        public override ValueKind[] PushTypes => new[] {Type};
 
-            context.WriteFull(Operation == OperationKind.Neg
-                ? $"{pushed} = {EnumUtils.GetDescription(Operation)}{popped}"
-                : $"{pushed} = {EnumUtils.GetDescription(Operation)}({popped})");
-        }
+        protected override string OperationStringFormat => "{0} = " + EnumUtils.GetDescription(Operation) + (Operation == OperationKind.Neg ? "{1}" : "({1})");
 
         public enum OperationKind
         {
