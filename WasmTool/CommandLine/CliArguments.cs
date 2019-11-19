@@ -19,7 +19,7 @@ namespace WasmTool.CommandLine
         public string? OutputFile { get; set; }
         
         [OptionParameter("decompiler", 'd')]
-        public DecompilerKind Decompiler { get; set; }
+        public DecompilerKind Decompiler { get; set; } = DecompilerKind.Generic;
         
         [OptionParameter("skip", 's')]
         public uint Skip { get; set; }

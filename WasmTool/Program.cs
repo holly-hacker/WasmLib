@@ -37,6 +37,7 @@ namespace WasmTool
             IDecompiler dec = arguments.Decompiler switch {
                 DecompilerKind.Disassembler => (IDecompiler)new DisassemblingDecompiler(wasmFile),
                 DecompilerKind.IntermediateRepresentation => new IntermediateRepresentationDecompiler(wasmFile),
+                DecompilerKind.Generic => new GenericDecompiler(wasmFile),
                 _ => throw new Exception("Invalid decompiler type specified"),
             };
 
