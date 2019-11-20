@@ -9,6 +9,7 @@ namespace WasmLib.Decompilation.Intermediate
     {
         public ValueKind Type { get; }
         public OperationKind Operation { get; }
+        public override bool IsPure => true;
         
         public TestOperationInstruction(in Instruction instruction)
         {

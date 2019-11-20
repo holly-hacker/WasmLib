@@ -10,6 +10,7 @@ namespace WasmLib.Decompilation.Intermediate
         public ValueKind Type { get; }
         public OperationKind Operation { get; }
         public bool? IsSigned { get; }
+        public override bool IsPure => true;
         
         public BinaryOperationInstruction(in Instruction instruction)
         {

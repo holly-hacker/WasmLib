@@ -10,7 +10,8 @@ namespace WasmLib.Decompilation.Intermediate
         public BranchKind Kind { get; }
         public uint Label { get; }
         public uint[]? Labels { get; }
-        
+        public override bool IsPure => false; // TODO: correct?
+
         public BranchInstruction(in Instruction instruction)
         {
             Kind = instruction.OpCode switch {

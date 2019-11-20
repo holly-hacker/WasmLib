@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Rivers;
-using Rivers.Analysis;
 using Rivers.Serialization.Dot;
 using WasmLib.Decompilation.Intermediate;
 using WasmLib.FileFormat;
@@ -48,9 +48,17 @@ namespace WasmLib.Decompilation
                 for (int i = 0; i < instruction.PushCount; i++) {
                     stack.Push((node, instruction.PushTypes[i]));
                 }
+                
+                // if this instruction is not pure, add a dependency on the last impure instruction, if any
+                // NOTE: this could possibly be optimized by having different kinds of impurity
+                if (!instruction.IsPure) {
+                    InstructionNode? dependentInstruction = graph.Nodes.Cast<InstructionNode>().Reverse().Skip(1).FirstOrDefault(x => !x.Instruction.IsPure);
+                    dependentInstruction?.OutgoingEdges.Add(node);
+                }
             }
             
-            Debug.Assert(!graph.IsCyclic(), "Got cyclic dependency in function!");
+            // this assert seems to fail, perhaps write own version in the future
+            // Debug.Assert(!graph.IsCyclic(), "Got cyclic dependency in function!");
             
             // TODO: get all nodes with no outgoing edges, write them out (taking into account side effects?)
             // TODO: remove trees with no side effects

@@ -10,6 +10,7 @@ namespace WasmLib.Decompilation.Intermediate
         public ValueKind Type { get; }
         public ComparisonKind Comparison { get; }
         public bool? IsSigned { get; }
+        public override bool IsPure => true;
         
         public ComparisonOperationInstruction(in Instruction instruction)
         {

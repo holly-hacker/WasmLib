@@ -5,6 +5,7 @@ namespace WasmLib.Decompilation.Intermediate
     public class ReturnInstruction : IntermediateInstruction
     {
         private readonly FunctionSignature signature;
+        public override bool IsPure => false;
 
         public ReturnInstruction(FunctionSignature signature)
         {

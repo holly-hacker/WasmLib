@@ -9,6 +9,7 @@ namespace WasmLib.Decompilation.Intermediate
     {
         public ValueKind Type { get; }
         public ulong RawOperand { get; }
+        public override bool IsPure => true;
         
         public ConstInstruction(in Instruction instruction)
         {

@@ -12,6 +12,7 @@ namespace WasmLib.Decompilation.Intermediate
         public string? Name { get; }
         public bool IsIndirect { get; }
         public FunctionSignature Signature { get; }
+        public override bool IsPure => false; // TODO: could be optimized by checking if referenced function is pure
 
         public override ValueKind[] PopTypes => (IsIndirect ? new[] {ValueKind.I32} : new ValueKind[0]).Concat(Signature.Parameters.Reverse()).ToArray();
         public override ValueKind[] PushTypes => Signature.ReturnParameter.Reverse().ToArray();

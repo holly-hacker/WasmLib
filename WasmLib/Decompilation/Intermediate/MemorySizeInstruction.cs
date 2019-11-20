@@ -7,6 +7,7 @@ namespace WasmLib.Decompilation.Intermediate
     public class MemorySizeInstruction : IntermediateInstruction
     {
         public OpCodeKind Kind { get; }
+        public override bool IsPure => false;
 
         public MemorySizeInstruction(in Instruction instruction)
         {
