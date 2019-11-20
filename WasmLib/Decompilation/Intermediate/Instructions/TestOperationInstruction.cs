@@ -10,7 +10,7 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public ValueKind Type { get; }
         public OperationKind Operation { get; }
         public override bool IsPure => true;
-        
+
         public TestOperationInstruction(in Instruction instruction)
         {
             (Type, Operation) = instruction.OpCode switch {
@@ -24,6 +24,8 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public override ValueKind[] PushTypes => new[] {ValueKind.I32};
 
         protected override string OperationStringFormat => $"{{0}} = {string.Format(EnumUtils.GetDescription(Operation), "{1}")}";
+        
+        public override string ToString() => Operation.ToString();
 
         public enum OperationKind
         {

@@ -64,6 +64,8 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         private ValueKind GetLocal(uint idx) => Locals.Skip((int)idx).First();
         private ValueKind GetGlobal(uint idx) => Globals.Skip((int)idx).First();
 
+        public override string ToString() => $"{Action} {Target}[{Index}]";
+
         public enum TargetKind
         {
             Local,

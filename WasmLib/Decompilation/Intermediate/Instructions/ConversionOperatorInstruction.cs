@@ -63,6 +63,11 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
             }
         }
 
+        public override string ToString()
+        {
+            return $"{Operation} to {TargetType}";
+        }
+
         public enum OperationKind
         {
             Wrap,

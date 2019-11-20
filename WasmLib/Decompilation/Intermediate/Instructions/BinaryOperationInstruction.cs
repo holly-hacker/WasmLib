@@ -78,6 +78,8 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
                 : $"{{2}} {EnumUtils.GetDescription(Operation)} {{1}}"
         };
 
+        public override string ToString() => Operation.ToString();
+
         public enum OperationKind
         {
             // both

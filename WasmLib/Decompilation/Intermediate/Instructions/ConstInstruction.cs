@@ -26,12 +26,19 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public override ValueKind[] PopTypes => new ValueKind[0];
         public override ValueKind[] PushTypes => new[] {Type};
 
-        protected override string OperationStringFormat => "{0} = " + Type switch {
+        protected override string OperationStringFormat => "{0} = " + OperandString;
+
+        private string OperandString => Type switch {
             ValueKind.I32 => $"0x{(uint)RawOperand:X}",
             ValueKind.I64 => $"0x{RawOperand:X}",
             ValueKind.F32 => $"{BitConverter.Int32BitsToSingle((int)RawOperand)}",
             ValueKind.F64 => $"{BitConverter.Int64BitsToDouble((long)RawOperand)}",
             _ => throw new ArgumentOutOfRangeException(),
         };
+
+        public override string ToString()
+        {
+            return $"{OperandString}";
+        }
     }
 }

@@ -45,6 +45,8 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
 
         protected override string OperationStringFormat => "{0} = " + EnumUtils.GetDescription(Operation) + (Operation == OperationKind.Neg ? "{1}" : "({1})");
 
+        public override string ToString() => Operation.ToString();
+
         public enum OperationKind
         {
             [Description("clz")] Clz,

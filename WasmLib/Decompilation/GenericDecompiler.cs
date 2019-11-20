@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Rivers;
+using Rivers.Analysis;
 using Rivers.Serialization.Dot;
 using WasmLib.Decompilation.Intermediate;
 using WasmLib.Decompilation.Intermediate.Graph;
@@ -44,7 +45,7 @@ namespace WasmLib.Decompilation
                 for (int i = 0; i < instruction.PopCount; i++) {
                     (InstructionNode sourceInstruction, ValueKind type) = stack.Pop();
                     Debug.Assert(type == instruction.PopTypes[i]);
-                    sourceInstruction.OutgoingEdges.Add(node);
+                    sourceInstruction.OutgoingEdges.Add(new StackVariableEdge(sourceInstruction, node, type));
                 }
                 for (int i = 0; i < instruction.PushCount; i++) {
                     stack.Push((node, instruction.PushTypes[i]));
@@ -54,12 +55,13 @@ namespace WasmLib.Decompilation
                 // NOTE: this could possibly be optimized by having different kinds of impurity
                 if (!instruction.IsPure) {
                     InstructionNode? dependentInstruction = graph.Nodes.Cast<InstructionNode>().Reverse().Skip(1).FirstOrDefault(x => !x.Instruction.IsPure);
-                    dependentInstruction?.OutgoingEdges.Add(node);
+                    dependentInstruction?.OutgoingEdges.Add(new ImpurityDependencyEdge(dependentInstruction, node));
                 }
             }
             
             // this assert seems to fail, perhaps write own version in the future
             // Debug.Assert(!graph.IsCyclic(), "Got cyclic dependency in function!");
+            Console.WriteLine(graph.IsCyclic());
             
             // TODO: get all nodes with no outgoing edges, write them out (taking into account side effects?)
             // TODO: remove trees with no side effects

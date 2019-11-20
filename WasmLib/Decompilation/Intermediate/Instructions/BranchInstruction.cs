@@ -10,6 +10,7 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public BranchKind Kind { get; }
         public uint Label { get; }
         public uint[]? Labels { get; }
+        public override bool RestOfBlockUnreachable => Kind == BranchKind.Normal || Kind == BranchKind.Table;
         public override bool IsPure => false; // TODO: correct?
 
         public BranchInstruction(in Instruction instruction)
@@ -38,7 +39,7 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
             _ => throw new IndexOutOfRangeException()
         };
 
-        public override bool RestOfBlockUnreachable => Kind == BranchKind.Normal || Kind == BranchKind.Table;
+        public override string ToString() => $"Branch {Kind}";
 
         public enum BranchKind
         {

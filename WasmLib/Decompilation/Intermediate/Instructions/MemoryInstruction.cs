@@ -69,6 +69,8 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
             }
         }
 
+        public override string ToString() => Action.ToString();
+
         public enum ActionKind
         {
             [Description("load")] Load,

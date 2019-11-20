@@ -65,6 +65,8 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
                 null => string.Empty,
             }}";
 
+        public override string ToString() => Comparison.ToString();
+
         public enum ComparisonKind
         {
             [Description("==")] Equal,
