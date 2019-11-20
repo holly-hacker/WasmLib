@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using WasmLib.Decompilation.Intermediate.Instructions;
 using WasmLib.FileFormat;
 using WasmLib.FileFormat.Instructions;
 

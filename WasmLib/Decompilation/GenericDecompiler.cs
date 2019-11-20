@@ -6,6 +6,7 @@ using System.Linq;
 using Rivers;
 using Rivers.Serialization.Dot;
 using WasmLib.Decompilation.Intermediate;
+using WasmLib.Decompilation.Intermediate.Graph;
 using WasmLib.FileFormat;
 
 namespace WasmLib.Decompilation

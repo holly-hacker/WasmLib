@@ -5,7 +5,7 @@ using WasmLib.FileFormat;
 using WasmLib.FileFormat.Instructions;
 using WasmLib.Utils;
 
-namespace WasmLib.Decompilation.Intermediate
+namespace WasmLib.Decompilation.Intermediate.Instructions
 {
     public class CallInstruction : IntermediateInstruction
     {

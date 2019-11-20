@@ -1,6 +1,6 @@
 using Rivers;
 
-namespace WasmLib.Decompilation.Intermediate
+namespace WasmLib.Decompilation.Intermediate.Graph
 {
     public class InstructionNode : Node
     {

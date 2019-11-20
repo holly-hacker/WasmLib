@@ -1,6 +1,6 @@
 using WasmLib.FileFormat;
 
-namespace WasmLib.Decompilation.Intermediate
+namespace WasmLib.Decompilation.Intermediate.Instructions
 {
     public class UnreachableInstruction : IntermediateInstruction
     {
