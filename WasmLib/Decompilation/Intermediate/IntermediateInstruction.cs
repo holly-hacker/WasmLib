@@ -9,6 +9,8 @@ namespace WasmLib.Decompilation.Intermediate
         public abstract ValueKind[] PopTypes { get; }
         public abstract ValueKind[] PushTypes { get; }
         public virtual bool RestOfBlockUnreachable => false;
+
+        public bool HasBlock => Block1 != null;
         
         public ControlBlock? Block1 { get; protected set; }
         public ControlBlock? Block2 { get; protected set; }
@@ -72,5 +74,7 @@ namespace WasmLib.Decompilation.Intermediate
                 context2.ExitBlock();
             }
         }
+
+        public override string ToString() => GetType().Name.Replace("Instruction", string.Empty);
     }
 }
