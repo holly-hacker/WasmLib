@@ -32,11 +32,6 @@ namespace WasmLib.Decompilation
                 instruction.Handle(ref context);
             }
             
-            // write return value, if needed
-            if (signature.ReturnParameter.Length != 0 && !context.RestOfBlockUnreachable) {
-                new ImplicitReturnInstruction(signature).Handle(ref context);
-            }
-            
             output.WriteLine("}");
 
             if (context.Indentation != 0) {

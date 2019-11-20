@@ -22,10 +22,17 @@ namespace WasmLib.Decompilation.Intermediate
         public List<IntermediateInstruction> Convert()
         {
             int start = 0;
-            return ConvertBlock(ref start);
+            var block = ConvertBlock(ref start);
+            
+            // add implicit return if required
+            if (signature.ReturnParameter.Length != 0) {
+                block.Add(new ImplicitReturnInstruction(signature));
+            }
+
+            return block;
         }
 
-        public List<IntermediateInstruction> ConvertBlock(ref int i, bool allowElse = false)
+        private List<IntermediateInstruction> ConvertBlock(ref int i, bool allowElse = false)
         {
             var list = new List<IntermediateInstruction>();
 

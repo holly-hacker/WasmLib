@@ -10,6 +10,7 @@ namespace WasmLib.Decompilation.Intermediate
         public abstract ValueKind[] PushTypes { get; }
         public virtual bool RestOfBlockUnreachable => false;
         public virtual bool IsPure => false;
+        public virtual bool IsImplicit => false;
 
         public bool HasBlock => Block1 != null;
         
@@ -23,6 +24,13 @@ namespace WasmLib.Decompilation.Intermediate
 
         public void Handle(ref IntermediateContext context)
         {
+            if (context.RestOfBlockUnreachable && IsImplicit) {
+                #if DEBUG
+                context.WriteFull("// omitted implicit instruction because rest of block is unreachable");
+                #endif
+                return;
+            }
+
             var args = new Variable[PushCount + PopCount];
             
             int i;
@@ -33,7 +41,7 @@ namespace WasmLib.Decompilation.Intermediate
             for (i = 0; i < PushCount; i++) {
                 args[i] = context.Push(PushTypes[i]);
             }
-
+            
             context.RestOfBlockUnreachable = RestOfBlockUnreachable;
             
             // NOTE: really ugly and slow

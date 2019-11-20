@@ -7,6 +7,8 @@ namespace WasmLib.Decompilation.Intermediate
     /// </remarks>
     public class ImplicitReturnInstruction : ReturnInstruction
     {
+        public override bool IsImplicit => true;
+
         public ImplicitReturnInstruction(FunctionSignature signature) : base(signature) { }
     }
 }
