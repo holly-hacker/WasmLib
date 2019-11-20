@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using WasmLib.Decompilation.Intermediate.Instructions;
 using WasmLib.FileFormat;
 using WasmLib.FileFormat.Instructions;
 
@@ -10,20 +11,29 @@ namespace WasmLib.Decompilation.Intermediate
     {
         private readonly WasmModule wasmModule;
         private readonly FunctionBody function;
+        private readonly FunctionSignature signature;
 
-        public IntermediateConverter(WasmModule wasmModule, FunctionBody function)
+        public IntermediateConverter(WasmModule wasmModule, FunctionBody function, FunctionSignature signature)
         {
             this.wasmModule = wasmModule;
             this.function = function;
+            this.signature = signature;
         }
 
         public List<IntermediateInstruction> Convert()
         {
             int start = 0;
-            return ConvertBlock(ref start);
+            var block = ConvertBlock(ref start);
+            
+            // add implicit return if required
+            if (signature.ReturnParameter.Length != 0) {
+                block.Add(new ImplicitReturnInstruction(signature));
+            }
+
+            return block;
         }
 
-        public List<IntermediateInstruction> ConvertBlock(ref int i, bool allowElse = false)
+        private List<IntermediateInstruction> ConvertBlock(ref int i, bool allowElse = false)
         {
             var list = new List<IntermediateInstruction>();
 
@@ -89,10 +99,10 @@ namespace WasmLib.Decompilation.Intermediate
                     return new BranchInstruction(instruction);
                 
                 case OpCode.Return:
-                    return new ReturnInstruction();
+                    return new ReturnInstruction(signature);
                 case OpCode.Call:
                 case OpCode.CallIndirect:
-                    return new CallInstruction(wasmModule, instruction);
+                    return new CallInstruction(instruction, wasmModule);
                 
                 case OpCode.Drop:
                     return new DropInstruction();
@@ -104,7 +114,7 @@ namespace WasmLib.Decompilation.Intermediate
                 case OpCode.LocalTee:
                 case OpCode.GlobalGet:
                 case OpCode.GlobalSet:
-                    return new VariableInstruction(instruction);
+                    return new VariableInstruction(instruction, wasmModule, function, signature);
 
                 case OpCode.I32Load:
                 case OpCode.I64Load:

@@ -4,5 +4,6 @@ namespace WasmTool.CommandLine
     {
         Disassembler,
         IntermediateRepresentation,
+        Generic,
     }
 }

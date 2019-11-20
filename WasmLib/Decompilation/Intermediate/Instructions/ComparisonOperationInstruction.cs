@@ -1,16 +1,16 @@
 using System.ComponentModel;
-using System.Diagnostics;
 using WasmLib.FileFormat;
 using WasmLib.FileFormat.Instructions;
 using WasmLib.Utils;
 
-namespace WasmLib.Decompilation.Intermediate
+namespace WasmLib.Decompilation.Intermediate.Instructions
 {
     public class ComparisonOperationInstruction : IntermediateInstruction
     {
         public ValueKind Type { get; }
         public ComparisonKind Comparison { get; }
         public bool? IsSigned { get; }
+        public override bool IsPure => true;
         
         public ComparisonOperationInstruction(in Instruction instruction)
         {
@@ -54,24 +54,18 @@ namespace WasmLib.Decompilation.Intermediate
                 _ => throw new WrongInstructionPassedException(instruction, nameof(ComparisonOperationInstruction)),
             };
         }
-        
-        public override void Handle(ref IntermediateContext context)
-        {
-            var popped2 = context.Pop();
-            Debug.Assert(popped2.Type == Type);
-            var popped1 = context.Pop();
-            Debug.Assert(popped1.Type == Type);
 
-            var pushed = context.Push(ValueKind.I32);
+        public override ValueKind[] PopTypes => new[] {Type, Type};
+        public override ValueKind[] PushTypes => new[] {ValueKind.I32};
 
-            string comment = IsSigned switch {
+        protected override string OperationStringFormat =>
+            $@"{{0}} = {{2}} {EnumUtils.GetDescription(Comparison)} {{1}}{IsSigned switch {
                 true => " // signed comparison",
                 false => " // unsigned comparison",
                 null => string.Empty,
-            };
-            
-            context.WriteFull($"{pushed} = {popped1} {EnumUtils.GetDescription(Comparison)} {popped2}{comment}");
-        }
+            }}";
+
+        public override string ToString() => Comparison.ToString();
 
         public enum ComparisonKind
         {

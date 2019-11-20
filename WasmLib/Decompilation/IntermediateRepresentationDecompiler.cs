@@ -21,8 +21,8 @@ namespace WasmLib.Decompilation
             FunctionSignature signature = WasmModule.FunctionTypes[WasmModule.Functions[functionIndex]];
             
             // get IR
-            var context = new IntermediateContext(body, signature, WasmModule, output);
-            List<IntermediateInstruction> instructions = new IntermediateConverter(WasmModule, body).Convert();
+            var context = new IntermediateContext(signature, WasmModule, output);
+            List<IntermediateInstruction> instructions = new IntermediateConverter(WasmModule, body, signature).Convert();
 
             output.Write(signature.ToString($"fun_{functionIndex:X8}"));
             output.WriteLine(" {");
@@ -30,11 +30,6 @@ namespace WasmLib.Decompilation
             // write all IR while simulating the stack
             foreach (IntermediateInstruction instruction in instructions) {
                 instruction.Handle(ref context);
-            }
-            
-            // write return value, if needed
-            if (signature.ReturnParameter.Length != 0) {
-                new ImplicitReturnInstruction().Handle(ref context);
             }
             
             output.WriteLine("}");

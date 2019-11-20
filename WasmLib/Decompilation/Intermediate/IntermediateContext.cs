@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -10,8 +9,6 @@ namespace WasmLib.Decompilation.Intermediate
     public struct IntermediateContext
     {
         public int Indentation { get; private set; }
-        public IReadOnlyList<ValueKind> Locals { get; }
-        public IReadOnlyList<ValueKind> Globals { get; }
         public FunctionSignature Signature { get; }
         public WasmModule WasmModule { get; }
         private readonly StreamWriter streamWriter;
@@ -22,20 +19,11 @@ namespace WasmLib.Decompilation.Intermediate
 
         private uint varCount;
 
-        public IntermediateContext(FunctionBody function, FunctionSignature signature, WasmModule wasmModule, StreamWriter writer)
+        public IntermediateContext(FunctionSignature signature, WasmModule wasmModule, StreamWriter writer)
         {
             Indentation = 0;
-            Locals = signature.Parameters.Concat(function.Locals).ToList();
             Signature = signature;
             WasmModule = wasmModule;
-
-            var importGlobals = wasmModule.Imports
-                .Where(x => x.Kind == ImportKind.GlobalType)
-                .Select(x =>
-                    x.GlobalType ??
-                    throw new Exception($"{nameof(Import.GlobalType)} had no value, but {nameof(Import.Kind)} was {nameof(ImportKind.GlobalType)}"));
-            var globals = wasmModule.Globals.Select(x => x.GlobalType); 
-            Globals = importGlobals.Concat(globals).Select(x => x.ValueKind).ToList();
             streamWriter = writer;
             Stack = new Stack<Variable>();
             StackIndices = new Stack<int>();
@@ -86,10 +74,6 @@ namespace WasmLib.Decompilation.Intermediate
                 Stack.Pop();
             }
         }
-
-        public ValueKind GetLocalType(uint i) => Locals[(int)i];
-
-        public ValueKind GetGlobalType(uint i) => Globals[(int)i];
 
         public void Indent() => Indentation++;
         

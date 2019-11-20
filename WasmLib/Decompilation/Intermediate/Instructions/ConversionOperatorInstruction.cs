@@ -1,9 +1,8 @@
-using System.Diagnostics;
 using WasmLib.FileFormat;
 using WasmLib.FileFormat.Instructions;
 using WasmLib.Utils;
 
-namespace WasmLib.Decompilation.Intermediate
+namespace WasmLib.Decompilation.Intermediate.Instructions
 {
     public class ConversionOperatorInstruction : IntermediateInstruction
     {
@@ -13,6 +12,7 @@ namespace WasmLib.Decompilation.Intermediate
         /// <remarks> t1 in <code>t2.cvtop_t1_sx</code> </remarks>
         public ValueKind SourceType { get; }
         public bool? IsSigned { get; }
+        public override bool IsPure => true;
 
         public ConversionOperatorInstruction(in Instruction instruction)
         {
@@ -45,24 +45,27 @@ namespace WasmLib.Decompilation.Intermediate
                 _ => throw new WrongInstructionPassedException(instruction, nameof(ConversionOperatorInstruction)),
             };
         }
-        
-        public override void Handle(ref IntermediateContext context)
+
+        public override ValueKind[] PopTypes => new[] {SourceType};
+        public override ValueKind[] PushTypes => new[] {TargetType};
+
+        protected override string OperationStringFormat {
+            get {
+                string targetString = EnumUtils.GetDescription(TargetType);
+
+                if (Operation == OperationKind.Reinterpret) {
+                    return $"{{0}} = *({targetString}*)&{{1}}";
+                }
+
+                return !IsSigned.HasValue
+                    ? $"{{0}} = ({targetString}){{1}}"
+                    : $"{{0}} = ({targetString}){{1}} // signed: {IsSigned}";
+            }
+        }
+
+        public override string ToString()
         {
-            var popped = context.Pop();
-            Debug.Assert(popped.Type == SourceType);
-
-            var pushed = context.Push(TargetType);
-            var targetString = EnumUtils.GetDescription(TargetType);
-
-            if (Operation == OperationKind.Reinterpret) {
-                context.WriteFull($"{pushed} = *({targetString}*)&{popped}");
-            }
-            else if (!IsSigned.HasValue) {
-                context.WriteFull($"{pushed} = ({targetString}){popped}");
-            }
-            else {
-                context.WriteFull($"{pushed} = ({targetString}){popped} // signed: {IsSigned}");
-            }
+            return $"{Operation} to {TargetType}";
         }
 
         public enum OperationKind

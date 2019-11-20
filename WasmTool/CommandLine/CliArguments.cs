@@ -19,12 +19,12 @@ namespace WasmTool.CommandLine
         public string? OutputFile { get; set; }
         
         [OptionParameter("decompiler", 'd')]
-        public DecompilerKind Decompiler { get; set; }
+        public DecompilerKind Decompiler { get; set; } = DecompilerKind.Generic;
         
         [OptionParameter("skip", 's')]
-        public int Skip { get; set; }
+        public uint Skip { get; set; }
 
         [OptionParameter("count", 'n')]
-        public int Count { get; set; } = int.MaxValue;
+        public uint Count { get; set; } = (uint)int.MaxValue;
     }
 }
