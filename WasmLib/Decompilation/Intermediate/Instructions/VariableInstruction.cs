@@ -45,18 +45,18 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public override string OperationStringFormat {
             get {
                 Debug.Assert((Target == TargetKind.Local ? Locals.Count() : Globals.Count()) > Index);
-                return Target switch {
-                    TargetKind.Local => (Action switch {
-                        ActionKind.Get => $"local[{Index}]",
-                        ActionKind.Set => $"local[{Index}] = {{0}}",
-                        ActionKind.Tee => $"local[{Index}] = {{0}}",
-                        _ => throw new ArgumentOutOfRangeException()
-                    }),
-                    TargetKind.Global => (Action switch {
-                        ActionKind.Get => $"global[{Index}]",
-                        ActionKind.Set => $"global[{Index}] = {{0}}",
-                        _ => throw new ArgumentOutOfRangeException()
-                    }),
+                
+                // NOTE: perhaps this naming stuff can be moved to a central location
+                string varName = Target == TargetKind.Local ? $"local[{Index - signature.Parameters.Length}]" : $"global[{Index}]";
+
+                if (Target == TargetKind.Local && Index < signature.Parameters.Length) {
+                    varName = $"param_{Index}";
+                }
+                
+                return Action switch {
+                    ActionKind.Get => varName,
+                    ActionKind.Set => varName + " = {0}",
+                    ActionKind.Tee => varName + " = {0}",
                     _ => throw new ArgumentOutOfRangeException()
                 };
             }

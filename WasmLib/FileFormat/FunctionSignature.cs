@@ -23,6 +23,13 @@ namespace WasmLib.FileFormat
         }
 
         public override string ToString() => $"{(ReturnParameter.Any() ? EnumUtils.GetDescription(ReturnParameter[0]) : "void")}({string.Join(", ", Parameters.Select(EnumUtils.GetDescription))})";
-        public string ToString(string functionName) => $"{(ReturnParameter.Any() ? EnumUtils.GetDescription(ReturnParameter[0]) : "void")} {functionName}({string.Join(", ", Parameters.Select(EnumUtils.GetDescription))})";
+        
+        public string ToString(string functionName)
+        {
+            string returnType = ReturnParameter.Any() ? EnumUtils.GetDescription(ReturnParameter[0]) : "void";
+            string args = string.Join(", ", Parameters.Select((kind, i) => $"{EnumUtils.GetDescription(kind)} param_{i}"));
+
+            return $"{returnType} {functionName}({args})";
+        }
     }
 }
