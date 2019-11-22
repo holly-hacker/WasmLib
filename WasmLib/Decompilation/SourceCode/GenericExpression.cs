@@ -1,3 +1,4 @@
+using System.Linq;
 using WasmLib.Decompilation.Intermediate;
 using WasmLib.Utils;
 
@@ -14,6 +15,6 @@ namespace WasmLib.Decompilation.SourceCode
             Parameters = parameters;
         }
 
-        public string GetStringRepresentation() => BaseInstruction.OperationStringFormat.SafeFormat(Parameters);
+        public string GetStringRepresentation() => BaseInstruction.OperationStringFormat.SafeFormat(Parameters?.Select(x => x.GetStringRepresentation()).ToArray());
     }
 }

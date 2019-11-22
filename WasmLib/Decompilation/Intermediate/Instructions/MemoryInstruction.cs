@@ -14,7 +14,8 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public uint Offset { get; }
         public uint Alignment { get; }
         
-        public override bool IsPure => false;
+        // inlining loads would be ugly
+        // public override bool IsPure => Action == ActionKind.Load;
 
         public MemoryInstruction(in Instruction instruction)
         {
