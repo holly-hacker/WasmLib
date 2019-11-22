@@ -1,6 +1,6 @@
 namespace WasmLib.Decompilation.SourceCode
 {
-    public class VariableReferenceExpression : Expression
+    public class VariableReferenceExpression : IExpression
     {
         public string Name { get; }
 
@@ -9,6 +9,6 @@ namespace WasmLib.Decompilation.SourceCode
             Name = name;
         }
 
-        public override string GetStringRepresentation() => Name;
+        public string GetStringRepresentation() => Name;
     }
 }

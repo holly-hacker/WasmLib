@@ -94,7 +94,7 @@ namespace WasmLib.Decompilation
                 {ValueKind.F64, 0},
             };
             
-            var statements = new Dictionary<int, Expression>();
+            var statements = new Dictionary<int, IExpression>();
             foreach (var currentNode in graph.Nodes.OfType<InstructionNode>()) {
                 var parameterEdges = currentNode.IncomingVariableEdges.ToArray();
 
@@ -103,7 +103,7 @@ namespace WasmLib.Decompilation
                     // for each dependency, check if it can be reached in a pure way
                     // if so, inline it
                     // if not, create intermediary statements
-                    var parameters = new Expression[parameterEdges.Length];
+                    var parameters = new IExpression[parameterEdges.Length];
                     for (int i = 0; i < parameterEdges.Length; i++) {
                         var edge = parameterEdges[i];
                         var variableNode = edge.Source;
@@ -128,7 +128,7 @@ namespace WasmLib.Decompilation
 
             }
 
-            foreach (Expression expression in statements.Values) {
+            foreach (IExpression expression in statements.Values) {
                 // TODO: support comments
                 output.WriteLine(new string('\t', 1) + expression.GetStringRepresentation());
             }

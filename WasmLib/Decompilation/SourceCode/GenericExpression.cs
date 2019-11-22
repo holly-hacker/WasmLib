@@ -3,17 +3,17 @@ using WasmLib.Utils;
 
 namespace WasmLib.Decompilation.SourceCode
 {
-    public class GenericExpression : Expression
+    public class GenericExpression : IExpression
     {
         public IntermediateInstruction BaseInstruction { get; }
-        public Expression[]? Parameters { get; }
+        public IExpression[]? Parameters { get; }
 
-        public GenericExpression(IntermediateInstruction baseInstruction, Expression[]? parameters = null)
+        public GenericExpression(IntermediateInstruction baseInstruction, IExpression[]? parameters = null)
         {
             BaseInstruction = baseInstruction;
             Parameters = parameters;
         }
 
-        public override string GetStringRepresentation() => BaseInstruction.OperationStringFormat.SafeFormat(Parameters);
+        public string GetStringRepresentation() => BaseInstruction.OperationStringFormat.SafeFormat(Parameters);
     }
 }

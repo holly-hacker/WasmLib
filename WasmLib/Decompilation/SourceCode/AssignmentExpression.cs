@@ -3,19 +3,19 @@ using WasmLib.Utils;
 
 namespace WasmLib.Decompilation.SourceCode
 {
-    public class AssignmentExpression : Expression
+    public class AssignmentExpression : IExpression
     {
-        public Expression BaseExpression { get; }
+        public IExpression BaseExpression { get; }
         public VariableReferenceExpression Reference { get; }
         public string Name { get; }
 
-        public AssignmentExpression(Expression baseExpression, ValueKind type, int index)
+        public AssignmentExpression(IExpression baseExpression, ValueKind type, int index)
         {
             BaseExpression = baseExpression;
             Name = $"{EnumUtils.GetDescription(type)}_{index}";
             Reference = new VariableReferenceExpression(Name);
         }
 
-        public override string GetStringRepresentation() => $"{Reference.GetStringRepresentation()} = {BaseExpression.GetStringRepresentation()}";
+        public string GetStringRepresentation() => $"{Reference.GetStringRepresentation()} = {BaseExpression.GetStringRepresentation()}";
     }
 }
