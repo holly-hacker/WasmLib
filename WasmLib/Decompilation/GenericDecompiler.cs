@@ -32,7 +32,11 @@ namespace WasmLib.Decompilation
             
             // TODO: remove subtrees with no side effects?
 
+            output.Write(signature.ToString($"fun_{functionIndex:X8}"));
+            output.WriteLine(" {");
             OutputAsCode(graph, output);
+            output.WriteLine("}");
+            output.WriteLine();
             
             // var writer = new DotWriter(output);
             // writer.Write(graph);
@@ -126,7 +130,7 @@ namespace WasmLib.Decompilation
 
             foreach (Expression expression in statements.Values) {
                 // TODO: support comments
-                output.WriteLine(expression.GetStringRepresentation());
+                output.WriteLine(new string('\t', 1) + expression.GetStringRepresentation());
             }
         }
     }
