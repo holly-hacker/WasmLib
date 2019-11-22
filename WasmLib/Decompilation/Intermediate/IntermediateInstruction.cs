@@ -40,7 +40,7 @@ namespace WasmLib.Decompilation.Intermediate
             
             context.RestOfBlockUnreachable = RestOfBlockUnreachable;
             
-            // NOTE: really ugly and slow, should be replaced with format when it is safe
+            // NOTE: really ugly and slow, but can't be replaced with string.format since input is dynamic and can contain {}
             string s = OperationStringFormat;
             for (int j = 0; j < args.Length; j++) {
                 s = s.Replace($"{{{j}}}", args[j].ToString());
@@ -50,10 +50,14 @@ namespace WasmLib.Decompilation.Intermediate
             if (PushCount > 0) {
                 s = $"{context.Push(PushTypes[0])} = {s}";
             }
+
+            if (HasBlock) {
+                s += " {";
+            }
             
             context.WriteFull(s);
 
-            if (Block1 != null) {
+            if (HasBlock) {
                 HandleBlock(ref context, Block1);
 
                 if (Block2 != null) {

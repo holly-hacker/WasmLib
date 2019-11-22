@@ -40,8 +40,8 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
                 if (Kind == ControlBlockKind.If) {
                     keyword += " {0}";
                 }
-                
-                return keyword + " {"; // TODO: { should not be here
+
+                return keyword;
             }
         }
 
