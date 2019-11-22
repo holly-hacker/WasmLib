@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Rivers;
 
 namespace WasmLib.Decompilation.Intermediate.Graph
@@ -6,10 +8,18 @@ namespace WasmLib.Decompilation.Intermediate.Graph
     public class InstructionNode : Node
     {
         public IntermediateInstruction Instruction { get; }
+        public int Index { get; }
+        public bool IsPure => Instruction.IsPure;
+
+        public IEnumerable<ImpurityDependencyEdge> OutgoingImpurityEdges => OutgoingEdges.OfType<ImpurityDependencyEdge>();
+        public IEnumerable<ImpurityDependencyEdge> IncomingImpurityEdges => IncomingEdges.OfType<ImpurityDependencyEdge>();
+        public IEnumerable<StackVariableEdge> OutgoingVariableEdges => OutgoingEdges.OfType<StackVariableEdge>();
+        public IEnumerable<StackVariableEdge> IncomingVariableEdges => IncomingEdges.OfType<StackVariableEdge>();
 
         public InstructionNode(IntermediateInstruction instruction, int idx) : base($"_{idx:X4}")
         {
             Instruction = instruction;
+            Index = idx;
             AddUserData();
         }
 
@@ -23,5 +33,7 @@ namespace WasmLib.Decompilation.Intermediate.Graph
                 ? $" {instructionString} "
                 : instructionString;
         }
+
+        public override string ToString() => Instruction.ToString();
     }
 }
