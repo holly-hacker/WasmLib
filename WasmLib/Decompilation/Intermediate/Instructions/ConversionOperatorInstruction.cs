@@ -54,12 +54,12 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
                 string targetString = EnumUtils.GetDescription(TargetType);
 
                 if (Operation == OperationKind.Reinterpret) {
-                    return $"{{0}} = *({targetString}*)&{{1}}";
+                    return $"*({targetString}*)&{{0}}";
                 }
 
                 return !IsSigned.HasValue
-                    ? $"{{0}} = ({targetString}){{1}}"
-                    : $"{{0}} = ({targetString}){{1}} // signed: {IsSigned}";
+                    ? $"({targetString}){{0}}"
+                    : $"({targetString}){{0}} // signed: {IsSigned}";
             }
         }
 

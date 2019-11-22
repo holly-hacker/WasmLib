@@ -9,6 +9,6 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
 
         public override bool IsPure => true;
 
-        protected override string OperationStringFormat => "{0} = {1} ? {3} : {2}";
+        protected override string OperationStringFormat => "{0} ? {2} : {1}";
     }
 }

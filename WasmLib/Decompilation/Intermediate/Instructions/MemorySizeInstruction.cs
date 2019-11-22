@@ -21,7 +21,7 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public override ValueKind[] PopTypes => Operation == OperationKind.Grow ? new[] {ValueKind.I32} : new ValueKind[0];
         public override ValueKind[] PushTypes => new[] {ValueKind.I32};
 
-        protected override string OperationStringFormat => Operation == OperationKind.Size ? "{0} = MEMORY.SIZE / PAGE_SIZE" : "{0} = MEMORY.GROW({1} * PAGE_SIZE)";
+        protected override string OperationStringFormat => Operation == OperationKind.Size ? "MEMORY.SIZE / PAGE_SIZE" : "MEMORY.GROW({0} * PAGE_SIZE)";
 
         public override string ToString() => Operation.ToString();
 

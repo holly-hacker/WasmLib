@@ -57,9 +57,9 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         // TODO: handle casting
         protected override string OperationStringFormat {
             get {
-                string dereference = $"*({EnumUtils.GetDescription(Type)}*)({{1}} + 0x{Offset:X})"; // NOTE: could be optimized
+                string dereference = $"*({EnumUtils.GetDescription(Type)}*)({{{(Action == ActionKind.Load ? 0 : 1)}}} + 0x{Offset:X})"; // NOTE: could be optimized
                 
-                string s = $"{(Action == ActionKind.Load ? $"{{0}} = {dereference}" : $"{dereference} = {{0}}")} // Alignment: 0x{1 << (int)Alignment:X}";
+                string s = $"{(Action == ActionKind.Load ? $"{dereference}" : $"{dereference} = {{0}}")} // Alignment: 0x{1 << (int)Alignment:X}";
             
                 if (Action == ActionKind.Load && Casting != CastingKind.Same) {
                     s += $", DECOMPILER WARNING: casting of type {Casting}";

@@ -38,10 +38,10 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
                 string keyword = EnumUtils.GetDescription(Kind);
 
                 if (Kind == ControlBlockKind.If) {
-                    keyword += $" {{{(Block1!.HasReturn ? 1 : 0)}}}";
+                    keyword += " {0}";
                 }
                 
-                return (Block1!.HasReturn ? "{0} = " : string.Empty) + keyword + " {";
+                return keyword + " {"; // TODO: { should not be here
             }
         }
 

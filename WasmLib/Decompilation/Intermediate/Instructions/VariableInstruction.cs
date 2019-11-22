@@ -46,13 +46,13 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
                 Debug.Assert((Target == TargetKind.Local ? Locals.Count() : Globals.Count()) > Index);
                 return Target switch {
                     TargetKind.Local => (Action switch {
-                        ActionKind.Get => $"{{0}} = local[{Index}]",
+                        ActionKind.Get => $"local[{Index}]",
                         ActionKind.Set => $"local[{Index}] = {{0}}",
-                        ActionKind.Tee => $"{{0}} = local[{Index}] = {{1}}",
+                        ActionKind.Tee => $"local[{Index}] = {{0}}",
                         _ => throw new ArgumentOutOfRangeException()
                     }),
                     TargetKind.Global => (Action switch {
-                        ActionKind.Get => $"{{0}} = global[{Index}]",
+                        ActionKind.Get => $"global[{Index}]",
                         ActionKind.Set => $"global[{Index}] = {{0}}",
                         _ => throw new ArgumentOutOfRangeException()
                     }),

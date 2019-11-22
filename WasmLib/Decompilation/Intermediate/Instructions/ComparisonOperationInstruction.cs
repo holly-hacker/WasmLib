@@ -59,7 +59,7 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public override ValueKind[] PushTypes => new[] {ValueKind.I32};
 
         protected override string OperationStringFormat =>
-            $@"{{0}} = {{2}} {EnumUtils.GetDescription(Comparison)} {{1}}{IsSigned switch {
+            $@"{{1}} {EnumUtils.GetDescription(Comparison)} {{0}}{IsSigned switch {
                 true => " // signed comparison",
                 false => " // unsigned comparison",
                 null => string.Empty,

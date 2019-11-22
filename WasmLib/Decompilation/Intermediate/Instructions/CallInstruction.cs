@@ -49,15 +49,13 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         protected override string OperationStringFormat {
             get {
                 if (Signature.ReturnParameter.Length > 1) {
-                    throw new Exception("Not implemented");
+                    throw new Exception("Multiple return values not implemented");
                 }
 
-                string name = IsIndirect ? $"ELEM[{{{PushCount}}}]" : Name!;
-                string parameters = string.Join(", ", Enumerable.Range(PushCount + (IsIndirect ? 1 : 0), PopCount - (IsIndirect ? 1 : 0)).Select(i => $"{{{i}}}"));
+                string name = IsIndirect ? "ELEM[{0}]" : Name!;
+                string parameters = string.Join(", ", Enumerable.Range(IsIndirect ? 1 : 0, PopCount - (IsIndirect ? 1 : 0)).Select(i => $"{{{i}}}"));
 
-                return Signature.ReturnParameter.Length == 1
-                    ? $"{{0}} = {name}({parameters})"
-                    : $"{name}({parameters})";
+                return $"{name}({parameters})";
             }
         }
     }

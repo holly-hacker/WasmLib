@@ -31,23 +31,24 @@ namespace WasmLib.Decompilation.Intermediate
                 return;
             }
 
-            var args = new Variable[PushCount + PopCount];
+            var args = new Variable[PopCount];
             
-            int i;
-            for (i = PushCount; i < PushCount + PopCount; i++) {
+            for (int i = 0; i < PopCount; i++) {
                 args[i] = context.Pop();
-                Debug.Assert(PopTypes[i - PushCount] == args[i].Type || PopTypes[i - PushCount] == ValueKind.Any || args[i].Type == ValueKind.Any);
-            }
-            for (i = 0; i < PushCount; i++) {
-                args[i] = context.Push(PushTypes[i]);
+                Debug.Assert(PopTypes[i] == args[i].Type || PopTypes[i] == ValueKind.Any || args[i].Type == ValueKind.Any);
             }
             
             context.RestOfBlockUnreachable = RestOfBlockUnreachable;
             
-            // NOTE: really ugly and slow
+            // NOTE: really ugly and slow, should be replaced with format when it is safe
             string s = OperationStringFormat;
             for (int j = 0; j < args.Length; j++) {
                 s = s.Replace($"{{{j}}}", args[j].ToString());
+            }
+            
+            Debug.Assert(PushCount <= 1);
+            if (PushCount > 0) {
+                s = $"{context.Push(PushTypes[0])} = {s}";
             }
             
             context.WriteFull(s);
