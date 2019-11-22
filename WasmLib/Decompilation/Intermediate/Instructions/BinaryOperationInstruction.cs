@@ -69,14 +69,14 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public override ValueKind[] PopTypes => new[] {Type, Type};
         public override ValueKind[] PushTypes => new[] {Type};
 
-        protected override string OperationStringFormat => Operation switch {
+        public override string OperationStringFormat => Operation switch {
             OperationKind.Min => "min({1}, {0})",
             OperationKind.Max => "max({1}, {0})",
             OperationKind.CopySign => "copysign({1}, {0})",
-            _ => IsSigned.HasValue
-                ? $"{{1}} {EnumUtils.GetDescription(Operation)} {{0}} // {(IsSigned.Value ? "signed" : "unsigned")} operation"
-                : $"{{1}} {EnumUtils.GetDescription(Operation)} {{0}}"
+            _ => $"{{1}} {EnumUtils.GetDescription(Operation)} {{0}}"
         };
+
+        public override string? Comment => IsSigned.HasValue ? $"{(IsSigned.Value ? "signed" : "unsigned")} operation" : null;
 
         public override string ToString() => Operation.ToString();
 

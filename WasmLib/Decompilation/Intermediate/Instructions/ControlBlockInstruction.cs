@@ -33,7 +33,7 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public override ValueKind[] PopTypes => Kind == ControlBlockKind.If ? new[] {ValueKind.I32} : new ValueKind[0];
         public override ValueKind[] PushTypes => ValueKind != ValueKind.Empty ? new[] {ValueKind} : new ValueKind[0];
 
-        protected override string OperationStringFormat {
+        public override string OperationStringFormat {
             get {
                 string keyword = EnumUtils.GetDescription(Kind);
 

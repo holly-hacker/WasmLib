@@ -58,12 +58,13 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public override ValueKind[] PopTypes => new[] {Type, Type};
         public override ValueKind[] PushTypes => new[] {ValueKind.I32};
 
-        protected override string OperationStringFormat =>
-            $@"{{1}} {EnumUtils.GetDescription(Comparison)} {{0}}{IsSigned switch {
-                true => " // signed comparison",
-                false => " // unsigned comparison",
-                null => string.Empty,
-            }}";
+        public override string OperationStringFormat => $@"{{1}} {EnumUtils.GetDescription(Comparison)} {{0}}";
+
+        public override string? Comment => IsSigned switch {
+            true => "signed comparison",
+            false => "unsigned comparison",
+            null => null,
+        };
 
         public override string ToString() => Comparison.ToString();
 

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using WasmLib.FileFormat;
+using WasmLib.Utils;
 
 namespace WasmLib.Decompilation.Intermediate
 {
@@ -19,9 +20,11 @@ namespace WasmLib.Decompilation.Intermediate
         
         public int PopCount => PopTypes.Length;
         public int PushCount => PushTypes.Length;
-        
-        protected abstract string OperationStringFormat { get; }
 
+        public abstract string OperationStringFormat { get; }
+        public virtual string? Comment => null;
+
+        // TODO: this should be in IntermediateRepresentationDecompiler or IntermediateContext
         public void Handle(ref IntermediateContext context)
         {
             if (context.RestOfBlockUnreachable && IsImplicit) {
@@ -41,10 +44,7 @@ namespace WasmLib.Decompilation.Intermediate
             context.RestOfBlockUnreachable = RestOfBlockUnreachable;
             
             // NOTE: really ugly and slow, but can't be replaced with string.format since input is dynamic and can contain {}
-            string s = OperationStringFormat;
-            for (int j = 0; j < args.Length; j++) {
-                s = s.Replace($"{{{j}}}", args[j].ToString());
-            }
+            string s = OperationStringFormat.SafeFormat(args);
             
             Debug.Assert(PushCount <= 1);
             if (PushCount > 0) {
@@ -54,11 +54,15 @@ namespace WasmLib.Decompilation.Intermediate
             if (HasBlock) {
                 s += " {";
             }
+
+            if (Comment != null) {
+                s += " // " + Comment;
+            }
             
             context.WriteFull(s);
 
             if (HasBlock) {
-                HandleBlock(ref context, Block1);
+                HandleBlock(ref context, Block1!);
 
                 if (Block2 != null) {
                     context.WriteFull("} else {");

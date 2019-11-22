@@ -46,7 +46,7 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
             }
         }
 
-        protected override string OperationStringFormat {
+        public override string OperationStringFormat {
             get {
                 if (Signature.ReturnParameter.Length > 1) {
                     throw new Exception("Multiple return values not implemented");

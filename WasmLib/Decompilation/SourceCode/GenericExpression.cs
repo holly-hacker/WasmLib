@@ -1,5 +1,5 @@
-using System.Linq;
 using WasmLib.Decompilation.Intermediate;
+using WasmLib.Utils;
 
 namespace WasmLib.Decompilation.SourceCode
 {
@@ -14,8 +14,6 @@ namespace WasmLib.Decompilation.SourceCode
             Parameters = parameters;
         }
 
-        public override string GetStringRepresentation() => Parameters is null
-            ? BaseInstruction.ToString()
-            : $"{BaseInstruction}({string.Join(", ", Parameters.Reverse().Select(x => x.GetStringRepresentation()))})";
+        public override string GetStringRepresentation() => BaseInstruction.OperationStringFormat.SafeFormat(Parameters);
     }
 }

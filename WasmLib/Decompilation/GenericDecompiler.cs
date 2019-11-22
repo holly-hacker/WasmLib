@@ -125,6 +125,7 @@ namespace WasmLib.Decompilation
             }
 
             foreach (Expression expression in statements.Values) {
+                // TODO: support comments
                 output.WriteLine(expression.GetStringRepresentation());
             }
         }

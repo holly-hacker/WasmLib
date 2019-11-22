@@ -41,7 +41,7 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public override ValueKind[] PopTypes => Action == ActionKind.Get ? new ValueKind[0] : new[] {Type};
         public override ValueKind[] PushTypes => Action == ActionKind.Set ? new ValueKind[0] : new[] {Type};
 
-        protected override string OperationStringFormat {
+        public override string OperationStringFormat {
             get {
                 Debug.Assert((Target == TargetKind.Local ? Locals.Count() : Globals.Count()) > Index);
                 return Target switch {

@@ -49,24 +49,19 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public override ValueKind[] PopTypes => new[] {SourceType};
         public override ValueKind[] PushTypes => new[] {TargetType};
 
-        protected override string OperationStringFormat {
+        public override string OperationStringFormat {
             get {
                 string targetString = EnumUtils.GetDescription(TargetType);
 
-                if (Operation == OperationKind.Reinterpret) {
-                    return $"*({targetString}*)&{{0}}";
-                }
-
-                return !IsSigned.HasValue
-                    ? $"({targetString}){{0}}"
-                    : $"({targetString}){{0}} // signed: {IsSigned}";
+                return Operation == OperationKind.Reinterpret
+                    ? $"*({targetString}*)&{{0}}"
+                    : $"({targetString}){{0}}";
             }
         }
 
-        public override string ToString()
-        {
-            return $"{Operation} to {TargetType}";
-        }
+        public override string? Comment => IsSigned.HasValue ? $"signed: {IsSigned}" : null;
+
+        public override string ToString() => $"{Operation} to {TargetType}";
 
         public enum OperationKind
         {

@@ -43,7 +43,7 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public override ValueKind[] PopTypes => new[] {Type};
         public override ValueKind[] PushTypes => new[] {Type};
 
-        protected override string OperationStringFormat => EnumUtils.GetDescription(Operation) + (Operation == OperationKind.Neg ? "{0}" : "({0})");
+        public override string OperationStringFormat => EnumUtils.GetDescription(Operation) + (Operation == OperationKind.Neg ? "{0}" : "({0})");
 
         public override string ToString() => Operation.ToString();
 

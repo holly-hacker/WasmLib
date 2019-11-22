@@ -16,6 +16,6 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public override bool RestOfBlockUnreachable => true;
         public override bool IsPure => false;
 
-        protected override string OperationStringFormat => signature.ReturnParameter.Length == 0 ? "return" : "return {0}";
+        public override string OperationStringFormat => signature.ReturnParameter.Length == 0 ? "return" : "return {0}";
     }
 }

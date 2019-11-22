@@ -32,7 +32,7 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public override ValueKind[] PopTypes => Kind == BranchKind.Conditional || Kind == BranchKind.Table ? new[] {ValueKind.I32} : new ValueKind[0];
         public override ValueKind[] PushTypes => new ValueKind[0];
 
-        protected override string OperationStringFormat => Kind switch {
+        public override string OperationStringFormat => Kind switch {
             BranchKind.Normal => $"BRANCH {Label}",
             BranchKind.Conditional => $"BRANCH_IF({{0}}) {Label}",
             BranchKind.Table => $"BRANCH_TABLE {{{string.Join(", ", Labels ?? throw new Exception("Found no labels for br_table instruction"))}}}[{{0}}] ?? {Label}",

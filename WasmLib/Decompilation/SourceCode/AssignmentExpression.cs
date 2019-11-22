@@ -16,6 +16,6 @@ namespace WasmLib.Decompilation.SourceCode
             Reference = new VariableReferenceExpression(Name);
         }
 
-        public override string GetStringRepresentation() => $"{Reference.GetStringRepresentation()} = {BaseExpression}";
+        public override string GetStringRepresentation() => $"{Reference.GetStringRepresentation()} = {BaseExpression.GetStringRepresentation()}";
     }
 }

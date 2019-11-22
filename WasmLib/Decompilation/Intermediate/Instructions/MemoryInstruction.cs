@@ -55,19 +55,21 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public override ValueKind[] PushTypes => Action == ActionKind.Load ? new[] {Type} : new ValueKind[0];
 
         // TODO: handle casting
-        protected override string OperationStringFormat {
+        public override string OperationStringFormat {
             get {
                 string dereference = $"*({EnumUtils.GetDescription(Type)}*)({{{(Action == ActionKind.Load ? 0 : 1)}}} + 0x{Offset:X})"; // NOTE: could be optimized
-                
-                string s = $"{(Action == ActionKind.Load ? $"{dereference}" : $"{dereference} = {{0}}")} // Alignment: 0x{1 << (int)Alignment:X}";
-            
-                if (Action == ActionKind.Load && Casting != CastingKind.Same) {
-                    s += $", DECOMPILER WARNING: casting of type {Casting}";
-                }
 
-                return s;
+                return Action == ActionKind.Store
+                    ? dereference + " = {0}"
+                    : dereference;
             }
         }
+
+        public override string? Comment => Action switch {
+            ActionKind.Store => $"Alignment: 0x{1 << (int)Alignment:X}",
+            ActionKind.Load when Casting != CastingKind.Same => $"DECOMPILER WARNING: casting of type {Casting}",
+            _ => null
+        };
 
         public override string ToString() => Action.ToString();
 
