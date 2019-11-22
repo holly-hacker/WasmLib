@@ -97,7 +97,7 @@ namespace WasmLib.Decompilation.Intermediate
             streamWriter.Write(s);
             streamWriter.WriteLine();
             
-            #if DEBUG
+            #if DEBUG_FLUSH
             streamWriter.Flush();
             #endif
         }
