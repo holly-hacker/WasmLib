@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using Rivers;
 using Rivers.Analysis;
+using Rivers.Serialization.Dot;
 using WasmLib.Decompilation.Intermediate;
 using WasmLib.Decompilation.Intermediate.Graph;
 using WasmLib.Decompilation.SourceCode;
@@ -49,17 +50,18 @@ namespace WasmLib.Decompilation
 
             int instructionNum = 0;
             foreach (IntermediateInstruction instruction in instructions) {
-                if (instruction.HasBlock) {
-                    throw new NotImplementedException();
-                }
-
-                InstructionNode node = new InstructionNode(instruction, instructionNum++);
+                InstructionNode node = !instruction.HasBlock
+                    ? new InstructionNode(instruction, instructionNum++)
+                    : instruction.Block2 == null
+                        ? new InstructionNode(instruction, instructionNum++, CreateGraph(instruction.Block1!.Instructions))
+                        : new InstructionNode(instruction, instructionNum++, CreateGraph(instruction.Block1!.Instructions), CreateGraph(instruction.Block2.Instructions));
+                
                 graph.Nodes.Add(node);
 
                 Debug.Assert(instruction.PushCount <= 1, "Instruction pushed multiple variables to stack, which shouldn't happen.");
                 for (int i = 0; i < instruction.PopCount; i++) {
                     (InstructionNode sourceInstruction, ValueKind type) = stack.Pop();
-                    Debug.Assert(type == instruction.PopTypes[i]);
+                    Debug.Assert(type == instruction.PopTypes[i] || type == ValueKind.Any || instruction.PopTypes[i] == ValueKind.Any);
                     sourceInstruction.OutgoingEdges.Add(new StackVariableEdge(sourceInstruction, node, type));
                 }
 
@@ -79,13 +81,16 @@ namespace WasmLib.Decompilation
             // BUG: see Washi1337/Rivers#6
             // Debug.Assert(!graph.IsCyclic(), "Got cyclic dependency in function!");
             if (!graph.IsConnected()) {
+                #if DEBUG
+                using (StreamWriter sw = new StreamWriter(File.OpenWrite("temp_unconnected.dot"))) new DotWriter(sw).Write(graph);
+                #endif
                 throw new NotImplementedException();
             }
 
             return graph;
         }
 
-        private static void OutputAsCode(Graph graph, TextWriter output)
+        private static void OutputAsCode(Graph graph, TextWriter output, int tabCount = 1)
         {
             var varCounts = new Dictionary<ValueKind, int> {
                 {ValueKind.I32, 0},
@@ -120,17 +125,32 @@ namespace WasmLib.Decompilation
                         }
                     }
 
-                    statements[currentNode.Index] = new GenericExpression(currentNode.Instruction, parameters);
+                    statements[currentNode.Index] = new GenericExpression(currentNode.Instruction, parameters, currentNode.Block1, currentNode.Block2);
                 }
                 else {
-                    statements[currentNode.Index] = new GenericExpression(currentNode.Instruction);
+                    statements[currentNode.Index] = new GenericExpression(currentNode.Instruction, null, currentNode.Block1, currentNode.Block2);
                 }
-
             }
 
             foreach (IExpression expression in statements.Values) {
                 // TODO: support comments
-                output.WriteLine(new string('\t', 1) + expression.GetStringRepresentation());
+                if (expression is GenericExpression ge && ge.Block1 != null) {
+                    output.WriteLine(new string('\t', tabCount) + expression.GetStringRepresentation() + " {");
+                    
+                    OutputAsCode(ge.Block1, output, tabCount + 1);
+
+                    if (ge.Block2 == null) {
+                        output.WriteLine(new string('\t', tabCount) + "}");
+                    }
+                    else {
+                        output.WriteLine(new string('\t', tabCount) + "} else {");
+                        OutputAsCode(ge.Block2, output, tabCount + 1);
+                        output.WriteLine(new string('\t', tabCount) + "}");
+                    }
+                }
+                else {
+                    output.WriteLine(new string('\t', tabCount) + expression.GetStringRepresentation());
+                }
             }
         }
     }

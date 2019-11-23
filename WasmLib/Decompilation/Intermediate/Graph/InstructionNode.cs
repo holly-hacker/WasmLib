@@ -15,11 +15,15 @@ namespace WasmLib.Decompilation.Intermediate.Graph
         public IEnumerable<ImpurityDependencyEdge> IncomingImpurityEdges => IncomingEdges.OfType<ImpurityDependencyEdge>();
         public IEnumerable<StackVariableEdge> OutgoingVariableEdges => OutgoingEdges.OfType<StackVariableEdge>();
         public IEnumerable<StackVariableEdge> IncomingVariableEdges => IncomingEdges.OfType<StackVariableEdge>();
+        public Rivers.Graph? Block1 { get; }
+        public Rivers.Graph? Block2 { get; }
 
-        public InstructionNode(IntermediateInstruction instruction, int idx) : base($"_{idx:X4}")
+        public InstructionNode(IntermediateInstruction instruction, int idx, Rivers.Graph? block1 = null, Rivers.Graph? block2 = null) : base($"_{idx:X4}")
         {
             Instruction = instruction;
             Index = idx;
+            Block1 = block1;
+            Block2 = block2;
             AddUserData();
         }
 
