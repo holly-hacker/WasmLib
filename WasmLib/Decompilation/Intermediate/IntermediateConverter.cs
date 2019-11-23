@@ -33,15 +33,19 @@ namespace WasmLib.Decompilation.Intermediate
             return block;
         }
 
-        private List<IntermediateInstruction> ConvertBlock(ref int i, bool allowElse = false)
+        private List<IntermediateInstruction> ConvertBlock(ref int i, bool allowElse = false, ValueKind blockReturnType = ValueKind.Empty)
         {
             var list = new List<IntermediateInstruction>();
+            bool reachable = true;
 
             for (; i < function.Instructions.Length; i++) {
                 Instruction instruction = function.Instructions[i];
                 switch (instruction.OpCode) {
                     case OpCode.End:
                     case OpCode.Else when allowElse:
+                        if (blockReturnType != ValueKind.Empty && reachable) {
+                            list.Add(new BlockReturnInstruction(blockReturnType));
+                        }
                         return list;
                     case OpCode.Else:
                         throw new Exception($"Unexpected `{instruction}` instruction, else is not allowed in the current block");
@@ -49,13 +53,13 @@ namespace WasmLib.Decompilation.Intermediate
                     case OpCode.Loop:
                     case OpCode.If:
                         i++;
-                        List<IntermediateInstruction> list1 = ConvertBlock(ref i, instruction.OpCode == OpCode.If);
+                        List<IntermediateInstruction> list1 = ConvertBlock(ref i, instruction.OpCode == OpCode.If, (ValueKind)instruction.UIntOperand);
                         List<IntermediateInstruction>? list2 = null;
 
                         var instr = function.Instructions[i];
                         if (instr.OpCode == OpCode.Else) {
                             i++;
-                            list2 = ConvertBlock(ref i);
+                            list2 = ConvertBlock(ref i, false, (ValueKind)instruction.UIntOperand);
                         }
                         else {
                             Debug.Assert(instr.OpCode == OpCode.End);
@@ -68,6 +72,10 @@ namespace WasmLib.Decompilation.Intermediate
 
                         if (intermediateInstruction != null) {
                             list.Add(intermediateInstruction);
+                            
+                            if (intermediateInstruction.RestOfBlockUnreachable) {
+                                reachable = false;
+                            } 
                         }
 
                         break;

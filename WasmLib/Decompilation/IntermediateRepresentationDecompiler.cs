@@ -102,14 +102,7 @@ namespace WasmLib.Decompilation
                     HandleInstruction(ref context2, instr);
                 }
 
-                // if stack has values left on it, and we expect a return value
-                if (block.HasReturn && !context2.RestOfBlockUnreachable) {
-                    Debug.Assert(context2.StackIndices.Peek() != context2.Stack.Count);
-                    
-                    var popped = context2.Pop();
-                    Debug.Assert(popped.Type == block.ValueKind);
-                    context2.WriteFull($"block_return {popped}");
-                }
+                Debug.Assert(!(block.HasReturn && !context2.RestOfBlockUnreachable));
 
                 context2.ExitBlock();
             }
