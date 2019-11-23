@@ -90,9 +90,9 @@ namespace WasmLib.Decompilation
             return graph;
         }
 
-        private static void OutputAsCode(Graph graph, TextWriter output, int tabCount = 1)
+        private static void OutputAsCode(Graph graph, TextWriter output, int tabCount = 1, Dictionary<ValueKind, int>? varCounts = null)
         {
-            var varCounts = new Dictionary<ValueKind, int> {
+            varCounts ??= new Dictionary<ValueKind, int> {
                 {ValueKind.I32, 0},
                 {ValueKind.I64, 0},
                 {ValueKind.F32, 0},
@@ -144,14 +144,14 @@ namespace WasmLib.Decompilation
                 if (expression is GenericExpression ge && ge.Block1 != null) {
                     output.WriteLine(new string('\t', tabCount) + stringRepresentation + " {");
                     
-                    OutputAsCode(ge.Block1, output, tabCount + 1);
+                    OutputAsCode(ge.Block1, output, tabCount + 1, varCounts);
 
                     if (ge.Block2 == null) {
                         output.WriteLine(new string('\t', tabCount) + "}");
                     }
                     else {
                         output.WriteLine(new string('\t', tabCount) + "} else {");
-                        OutputAsCode(ge.Block2, output, tabCount + 1);
+                        OutputAsCode(ge.Block2, output, tabCount + 1, varCounts);
                         output.WriteLine(new string('\t', tabCount) + "}");
                     }
                 }
