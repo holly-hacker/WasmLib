@@ -5,7 +5,7 @@ using WasmLib.Utils;
 
 namespace WasmLib.Decompilation.SourceCode
 {
-    public class GenericExpression : IExpression
+    public class GenericExpression : IExpression, IHasBlocks
     {
         public IntermediateInstruction BaseInstruction { get; }
         public IExpression[]? Parameters { get; }

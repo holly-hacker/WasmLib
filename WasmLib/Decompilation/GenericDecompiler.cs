@@ -141,17 +141,17 @@ namespace WasmLib.Decompilation
                 }
                 
                 // TODO: support comments
-                if (expression is GenericExpression ge && ge.Block1 != null) {
+                if (expression is IHasBlocks blocks && blocks.Block1 != null) {
                     output.WriteLine(new string('\t', tabCount) + stringRepresentation + " {");
                     
-                    OutputAsCode(ge.Block1, output, tabCount + 1, varCounts);
+                    OutputAsCode(blocks.Block1, output, tabCount + 1, varCounts);
 
-                    if (ge.Block2 == null) {
+                    if (blocks.Block2 == null) {
                         output.WriteLine(new string('\t', tabCount) + "}");
                     }
                     else {
                         output.WriteLine(new string('\t', tabCount) + "} else {");
-                        OutputAsCode(ge.Block2, output, tabCount + 1, varCounts);
+                        OutputAsCode(blocks.Block2, output, tabCount + 1, varCounts);
                         output.WriteLine(new string('\t', tabCount) + "}");
                     }
                 }
