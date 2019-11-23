@@ -8,7 +8,7 @@ namespace WasmLib.Decompilation.Intermediate
         public abstract ValueKind[] PopTypes { get; }
         public abstract ValueKind[] PushTypes { get; }
         public virtual bool RestOfBlockUnreachable => false;
-        public virtual bool IsPure => false;
+        public virtual bool IsOrderImportant => true;
         public virtual bool CanInline => true;
         public virtual bool CanBeInlined => true; // only matters if PushTypes has items
         public virtual bool IsImplicit => false;

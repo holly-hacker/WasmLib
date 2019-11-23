@@ -72,8 +72,8 @@ namespace WasmLib.Decompilation
                 // if this instruction is not pure, add a dependency on the last impure instruction, if any
                 // NOTE: this could possibly be optimized by having different kinds of impurity
                 // TODO: edges not required anymore for decompiled code output?
-                if (!node.IsPure) {
-                    InstructionNode? dependentInstruction = graph.Nodes.Cast<InstructionNode>().Reverse().Skip(1).FirstOrDefault(x => !x.IsPure);
+                if (node.IsOrderImportant) {
+                    InstructionNode? dependentInstruction = graph.Nodes.Cast<InstructionNode>().Reverse().Skip(1).FirstOrDefault(x => x.IsOrderImportant);
                     dependentInstruction?.OutgoingEdges.Add(new ImpurityDependencyEdge(dependentInstruction, node));
                 }
             }
@@ -112,7 +112,7 @@ namespace WasmLib.Decompilation
                     for (int i = 0; i < parameterEdges.Length; i++) {
                         var edge = parameterEdges[i];
                         var variableNode = edge.Source;
-                        var impureInstructions = graph.Nodes.OfType<InstructionNode>().Where(x => !x.IsPure & x.Index > variableNode.Index && x.Index < currentNode.Index);
+                        var impureInstructions = graph.Nodes.OfType<InstructionNode>().Where(x => x.Index > variableNode.Index && x.Index < currentNode.Index && x.IsOrderImportant);
 
                         if (currentNode.Instruction.CanInline && variableNode.Instruction.CanBeInlined && !impureInstructions.Any()) {
                             parameters[i] = statements[variableNode.Index];

@@ -14,7 +14,7 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public uint Offset { get; }
         public uint Alignment { get; }
 
-        public override bool IsPure => false;
+        public override bool IsOrderImportant => true;
 
         public MemoryInstruction(in Instruction instruction)
         {

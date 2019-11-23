@@ -10,7 +10,7 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
     {
         public ControlBlockKind Kind { get; }
         public ValueKind ValueKind { get; }
-        public override bool IsPure => false; // TODO: could be optimized by checking if control blocks are pure
+        public override bool IsOrderImportant => true; // TODO: could be optimized by checking if control blocks are pure
         public override bool CanBeInlined => false;
         
         public ControlBlockInstruction(in Instruction instruction, IReadOnlyList<IntermediateInstruction> block1, IReadOnlyList<IntermediateInstruction>? block2)

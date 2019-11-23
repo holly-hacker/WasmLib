@@ -9,7 +9,7 @@ namespace WasmLib.Decompilation.Intermediate.Graph
     {
         public IntermediateInstruction Instruction { get; }
         public int Index { get; }
-        public bool IsPure => Instruction.IsPure;
+        public bool IsOrderImportant => Instruction.IsOrderImportant;
 
         public IEnumerable<ImpurityDependencyEdge> OutgoingImpurityEdges => OutgoingEdges.OfType<ImpurityDependencyEdge>();
         public IEnumerable<ImpurityDependencyEdge> IncomingImpurityEdges => IncomingEdges.OfType<ImpurityDependencyEdge>();

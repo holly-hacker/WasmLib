@@ -12,7 +12,7 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         /// <remarks> t1 in <code>t2.cvtop_t1_sx</code> </remarks>
         public ValueKind SourceType { get; }
         public bool? IsSigned { get; }
-        public override bool IsPure => true;
+        public override bool IsOrderImportant => false;
 
         public ConversionOperatorInstruction(in Instruction instruction)
         {

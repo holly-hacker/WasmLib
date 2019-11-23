@@ -9,7 +9,7 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
     {
         public ValueKind Type { get; }
         public OperationKind Operation { get; }
-        public override bool IsPure => true;
+        public override bool IsOrderImportant => false;
 
         public UnaryOperationInstruction(in Instruction instruction)
         {
