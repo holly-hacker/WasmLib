@@ -6,8 +6,9 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
     {
         public override ValueKind[] PopTypes => new[] {ValueKind.Any};
         public override ValueKind[] PushTypes => new ValueKind[0];
-        public override string OperationStringFormat => "// drop {0}";
+        public override string OperationStringFormat => string.Empty;
+        public override string Comment => "drop {0}"; // NOTE: could only make this on debug builds
         public override bool IsPure => true;
-        public override bool CanBeInlined => false; // inlined behavior would be part of the comment
+        public override bool CanInline => false; // not supposed to output anything
     }
 }

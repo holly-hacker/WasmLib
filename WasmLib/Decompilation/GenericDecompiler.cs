@@ -112,9 +112,9 @@ namespace WasmLib.Decompilation
                     for (int i = 0; i < parameterEdges.Length; i++) {
                         var edge = parameterEdges[i];
                         var variableNode = edge.Source;
-                        var doesNotSkipImpure = !graph.Nodes.OfType<InstructionNode>().Any(x => !x.IsPure & x.Index > variableNode.Index && x.Index < currentNode.Index);
+                        var impureInstructions = graph.Nodes.OfType<InstructionNode>().Where(x => !x.IsPure & x.Index > variableNode.Index && x.Index < currentNode.Index);
 
-                        if (doesNotSkipImpure && variableNode.Instruction.CanBeInlined) {
+                        if (currentNode.Instruction.CanInline && variableNode.Instruction.CanBeInlined && !impureInstructions.Any()) {
                             parameters[i] = statements[variableNode.Index];
                             statements.Remove(variableNode.Index);
                         }
@@ -133,9 +133,16 @@ namespace WasmLib.Decompilation
             }
 
             foreach (IExpression expression in statements.Values) {
+                var stringRepresentation = expression.GetStringRepresentation();
+
+                // don't write empty statements such as blocks
+                if (string.IsNullOrEmpty(stringRepresentation)) {
+                    continue;
+                }
+                
                 // TODO: support comments
                 if (expression is GenericExpression ge && ge.Block1 != null) {
-                    output.WriteLine(new string('\t', tabCount) + expression.GetStringRepresentation() + " {");
+                    output.WriteLine(new string('\t', tabCount) + stringRepresentation + " {");
                     
                     OutputAsCode(ge.Block1, output, tabCount + 1);
 
@@ -149,7 +156,7 @@ namespace WasmLib.Decompilation
                     }
                 }
                 else {
-                    output.WriteLine(new string('\t', tabCount) + expression.GetStringRepresentation());
+                    output.WriteLine(new string('\t', tabCount) + stringRepresentation);
                 }
             }
         }
