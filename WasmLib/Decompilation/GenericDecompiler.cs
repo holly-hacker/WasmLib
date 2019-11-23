@@ -112,9 +112,9 @@ namespace WasmLib.Decompilation
                     for (int i = 0; i < parameterEdges.Length; i++) {
                         var edge = parameterEdges[i];
                         var variableNode = edge.Source;
-                        var isPure = !graph.Nodes.OfType<InstructionNode>().Any(x => !x.IsPure & x.Index > variableNode.Index && x.Index < currentNode.Index);
+                        var doesNotSkipImpure = !graph.Nodes.OfType<InstructionNode>().Any(x => !x.IsPure & x.Index > variableNode.Index && x.Index < currentNode.Index);
 
-                        if (isPure) { // TODO: and instruction can be inlined
+                        if (doesNotSkipImpure && variableNode.Instruction.CanBeInlined) {
                             parameters[i] = statements[variableNode.Index];
                             statements.Remove(variableNode.Index);
                         }

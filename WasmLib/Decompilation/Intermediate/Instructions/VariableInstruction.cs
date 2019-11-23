@@ -15,6 +15,7 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public uint Index { get; }
         public ValueKind Type => Target == TargetKind.Local ? GetLocal(Index) : GetGlobal(Index);
         public override bool IsPure => Action == ActionKind.Get;
+        public override bool CanBeInlined => Action != ActionKind.Tee;
 
         private readonly WasmModule module;
         private readonly FunctionBody body;

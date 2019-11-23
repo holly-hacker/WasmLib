@@ -9,6 +9,7 @@ namespace WasmLib.Decompilation.Intermediate
         public abstract ValueKind[] PushTypes { get; }
         public virtual bool RestOfBlockUnreachable => false;
         public virtual bool IsPure => false;
+        public virtual bool CanBeInlined => true; // only matters if PushTypes has items
         public virtual bool IsImplicit => false;
 
         public bool HasBlock => Block1 != null;
