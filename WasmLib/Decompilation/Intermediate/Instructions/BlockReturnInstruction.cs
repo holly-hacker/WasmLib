@@ -15,6 +15,7 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public override ValueKind[] PushTypes => new ValueKind[0];
         public override bool RestOfBlockUnreachable => true;
         public override bool IsPure => false;
+        public override bool IsImplicit => true;
 
         public override string OperationStringFormat => "block_return {0}";
     }
