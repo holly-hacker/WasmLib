@@ -9,6 +9,9 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
     {
         public ValueKind Type { get; }
         public ulong RawOperand { get; }
+
+        public override ValueKind[] PopTypes => new ValueKind[0];
+        public override ValueKind[] PushTypes => new[] {Type};
         
         public ConstInstruction(in Instruction instruction)
         {
@@ -21,9 +24,6 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
             };
             RawOperand = instruction.ULongOperand;
         }
-
-        public override ValueKind[] PopTypes => new ValueKind[0];
-        public override ValueKind[] PushTypes => new[] {Type};
 
         public override string OperationStringFormat => OperandString;
 

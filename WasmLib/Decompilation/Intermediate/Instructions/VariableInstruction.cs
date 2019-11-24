@@ -10,20 +10,24 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
 {
     public class VariableInstruction : IntermediateInstruction
     {
-        public TargetKind Target { get; }
-        public ActionKind Action { get; }
-        public uint Index { get; }
-        public ValueKind Type => Target == TargetKind.Local ? GetLocal(Index) : GetGlobal(Index);
-        public override StateKind ModifiesState => Action == ActionKind.Get ? StateKind.None : Target == TargetKind.Global ? StateKind.Globals : StateKind.Locals;
-        public override StateKind ReadsState => Action == ActionKind.Set ? StateKind.None : Target == TargetKind.Global ? StateKind.Globals : StateKind.Locals;
-        public override bool CanBeInlined => Action != ActionKind.Tee; // would cause assignments in comparisons
-
         private readonly WasmModule module;
         private readonly FunctionBody body;
         private readonly FunctionSignature signature;
 
+        public TargetKind Target { get; }
+        public ActionKind Action { get; }
+        public uint Index { get; }
+        public ValueKind Type => Target == TargetKind.Local ? GetLocal(Index) : GetGlobal(Index);
+        
+        public override ValueKind[] PopTypes => Action == ActionKind.Get ? new ValueKind[0] : new[] {Type};
+        public override ValueKind[] PushTypes => Action == ActionKind.Set ? new ValueKind[0] : new[] {Type};
+
         private IEnumerable<ValueKind> Locals => signature.Parameters.Concat(body.Locals);
         private IEnumerable<ValueKind> Globals => module.ImportedGlobals.Concat(module.Globals.Select(x => x.GlobalType)).Select(x => x.ValueKind);
+
+        public override StateKind ModifiesState => Action == ActionKind.Get ? StateKind.None : Target == TargetKind.Global ? StateKind.Globals : StateKind.Locals;
+        public override StateKind ReadsState => Action == ActionKind.Set ? StateKind.None : Target == TargetKind.Global ? StateKind.Globals : StateKind.Locals;
+        public override bool CanBeInlined => Action != ActionKind.Tee; // would cause assignments in comparisons
 
         public VariableInstruction(in Instruction instruction, WasmModule module, FunctionBody body, FunctionSignature signature)
         {
@@ -40,9 +44,6 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
             };
             Index = instruction.UIntOperand;
         }
-        
-        public override ValueKind[] PopTypes => Action == ActionKind.Get ? new ValueKind[0] : new[] {Type};
-        public override ValueKind[] PushTypes => Action == ActionKind.Set ? new ValueKind[0] : new[] {Type};
 
         public override string OperationStringFormat {
             get {

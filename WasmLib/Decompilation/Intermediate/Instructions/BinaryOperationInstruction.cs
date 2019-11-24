@@ -11,6 +11,9 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public OperationKind Operation { get; }
         public bool? IsSigned { get; }
 
+        public override ValueKind[] PopTypes => new[] {Type, Type};
+        public override ValueKind[] PushTypes => new[] {Type};
+
         public BinaryOperationInstruction(in Instruction instruction)
         {
             (Type, Operation, IsSigned) = instruction.OpCode switch {
@@ -64,9 +67,6 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
                 _ => throw new WrongInstructionPassedException(instruction, nameof(VariableInstruction)),
             };
         }
-
-        public override ValueKind[] PopTypes => new[] {Type, Type};
-        public override ValueKind[] PushTypes => new[] {Type};
 
         public override string OperationStringFormat => Operation switch {
             OperationKind.Min => "min({1}, {0})",

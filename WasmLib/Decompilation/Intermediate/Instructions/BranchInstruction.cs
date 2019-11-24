@@ -10,6 +10,10 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public BranchKind Kind { get; }
         public uint Label { get; }
         public uint[]? Labels { get; }
+
+        public override ValueKind[] PopTypes => Kind == BranchKind.Conditional || Kind == BranchKind.Table ? new[] {ValueKind.I32} : new ValueKind[0];
+        public override ValueKind[] PushTypes => new ValueKind[0];
+
         public override bool RestOfBlockUnreachable => Kind == BranchKind.Normal || Kind == BranchKind.Table;
         public override bool ModifiesControlFlow => true;
 
@@ -28,9 +32,6 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
                 Labels = instruction.UIntArrayOperand;
             }
         }
-
-        public override ValueKind[] PopTypes => Kind == BranchKind.Conditional || Kind == BranchKind.Table ? new[] {ValueKind.I32} : new ValueKind[0];
-        public override ValueKind[] PushTypes => new ValueKind[0];
 
         public override string OperationStringFormat => Kind switch {
             BranchKind.Normal => $"BRANCH {Label}",

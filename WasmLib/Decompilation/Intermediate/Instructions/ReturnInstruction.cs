@@ -6,15 +6,16 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
     {
         private readonly FunctionSignature signature;
 
+        public override ValueKind[] PopTypes => signature.ReturnParameter;
+        public override ValueKind[] PushTypes => new ValueKind[0];
+
+        public override bool RestOfBlockUnreachable => true;
+        public override bool ModifiesControlFlow => true;
+
         public ReturnInstruction(FunctionSignature signature)
         {
             this.signature = signature;
         }
-
-        public override ValueKind[] PopTypes => signature.ReturnParameter;
-        public override ValueKind[] PushTypes => new ValueKind[0];
-        public override bool RestOfBlockUnreachable => true;
-        public override bool ModifiesControlFlow => true;
 
         public override string OperationStringFormat => signature.ReturnParameter.Length == 0 ? "return" : "return {0}";
     }

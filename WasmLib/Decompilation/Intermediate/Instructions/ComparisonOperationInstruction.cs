@@ -10,6 +10,9 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public ValueKind Type { get; }
         public ComparisonKind Comparison { get; }
         public bool? IsSigned { get; }
+
+        public override ValueKind[] PopTypes => new[] {Type, Type};
+        public override ValueKind[] PushTypes => new[] {ValueKind.I32};
         
         public ComparisonOperationInstruction(in Instruction instruction)
         {
@@ -53,9 +56,6 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
                 _ => throw new WrongInstructionPassedException(instruction, nameof(ComparisonOperationInstruction)),
             };
         }
-
-        public override ValueKind[] PopTypes => new[] {Type, Type};
-        public override ValueKind[] PushTypes => new[] {ValueKind.I32};
 
         public override string OperationStringFormat => $@"{{1}} {EnumUtils.GetDescription(Comparison)} {{0}}";
 

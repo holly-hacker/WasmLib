@@ -7,9 +7,10 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public override ValueKind[] PopTypes => new ValueKind[0];
         public override ValueKind[] PushTypes => new ValueKind[0];
 
-        public override string OperationStringFormat => "// UNREACHABLE";
         public override bool RestOfBlockUnreachable => true;
         public override bool ModifiesControlFlow => true;
         public override bool CanBeInlined => false;
+
+        public override string OperationStringFormat => "// UNREACHABLE";
     }
 }

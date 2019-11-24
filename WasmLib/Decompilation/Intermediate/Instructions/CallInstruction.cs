@@ -12,12 +12,13 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public string? Name { get; }
         public bool IsIndirect { get; }
         public FunctionSignature Signature { get; }
-        public override bool CanBeInlined => false; // only for readability
-        public override StateKind ModifiesState => StateKind.All & ~StateKind.Locals; // TODO: could be optimized by checking if referenced function is pure
-        public override StateKind ReadsState => StateKind.All & ~StateKind.Locals;
 
         public override ValueKind[] PopTypes => (IsIndirect ? new[] {ValueKind.I32} : new ValueKind[0]).Concat(Signature.Parameters.Reverse()).ToArray();
         public override ValueKind[] PushTypes => Signature.ReturnParameter.Reverse().ToArray();
+
+        public override bool CanBeInlined => false; // only for readability
+        public override StateKind ModifiesState => StateKind.All & ~StateKind.Locals; // TODO: could be optimized by checking if referenced function is pure
+        public override StateKind ReadsState => StateKind.All & ~StateKind.Locals;
         
         public CallInstruction(in Instruction instruction, WasmModule module)
         {

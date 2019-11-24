@@ -14,6 +14,9 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public uint Offset { get; }
         public uint Alignment { get; }
 
+        public override ValueKind[] PopTypes => Action == ActionKind.Store ? new[] {Type, ValueKind.I32} : new[] {ValueKind.I32}; 
+        public override ValueKind[] PushTypes => Action == ActionKind.Load ? new[] {Type} : new ValueKind[0];
+
         public override StateKind ModifiesState => Action == ActionKind.Store ? StateKind.Memory : StateKind.None;
         public override StateKind ReadsState => Action == ActionKind.Load ? StateKind.Memory : StateKind.None;
 
@@ -51,9 +54,6 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
             Offset = (uint)(operand & 0xFFFFFFFF);
             Alignment = (uint)((operand & 0xFFFFFFFF00000000) >> 32);
         }
-
-        public override ValueKind[] PopTypes => Action == ActionKind.Store ? new[] {Type, ValueKind.I32} : new[] {ValueKind.I32}; 
-        public override ValueKind[] PushTypes => Action == ActionKind.Load ? new[] {Type} : new ValueKind[0];
 
         // TODO: handle casting
         public override string OperationStringFormat {

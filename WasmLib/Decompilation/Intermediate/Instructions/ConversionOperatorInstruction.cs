@@ -13,6 +13,9 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public ValueKind SourceType { get; }
         public bool? IsSigned { get; }
 
+        public override ValueKind[] PopTypes => new[] {SourceType};
+        public override ValueKind[] PushTypes => new[] {TargetType};
+
         public ConversionOperatorInstruction(in Instruction instruction)
         {
             (Operation, TargetType, SourceType, IsSigned) = instruction.OpCode switch {
@@ -44,9 +47,6 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
                 _ => throw new WrongInstructionPassedException(instruction, nameof(ConversionOperatorInstruction)),
             };
         }
-
-        public override ValueKind[] PopTypes => new[] {SourceType};
-        public override ValueKind[] PushTypes => new[] {TargetType};
 
         public override string OperationStringFormat {
             get {

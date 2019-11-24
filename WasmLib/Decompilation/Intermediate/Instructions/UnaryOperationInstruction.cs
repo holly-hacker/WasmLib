@@ -10,6 +10,9 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public ValueKind Type { get; }
         public OperationKind Operation { get; }
 
+        public override ValueKind[] PopTypes => new[] {Type};
+        public override ValueKind[] PushTypes => new[] {Type};
+
         public UnaryOperationInstruction(in Instruction instruction)
         {
             (Type, Operation) = instruction.OpCode switch {
@@ -38,9 +41,6 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
                 _ => throw new WrongInstructionPassedException(instruction, nameof(UnaryOperationInstruction)),
             };
         }
-
-        public override ValueKind[] PopTypes => new[] {Type};
-        public override ValueKind[] PushTypes => new[] {Type};
 
         public override string OperationStringFormat => EnumUtils.GetDescription(Operation) + (Operation == OperationKind.Neg ? "{0}" : "({0})");
 

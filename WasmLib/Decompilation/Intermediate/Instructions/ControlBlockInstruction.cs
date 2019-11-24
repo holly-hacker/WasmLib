@@ -10,11 +10,15 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
     {
         public ControlBlockKind Kind { get; }
         public ValueKind ValueKind { get; }
+
+        public override ValueKind[] PopTypes => Kind == ControlBlockKind.If ? new[] {ValueKind.I32} : new ValueKind[0];
+        public override ValueKind[] PushTypes => ValueKind != ValueKind.Empty ? new[] {ValueKind} : new ValueKind[0];
+
         public override bool ModifiesControlFlow => true; // TODO: could be optimized by checking if control blocks are pure
         public override StateKind ModifiesState => StateKind.All; // same as above
         public override StateKind ReadsState => StateKind.All; // same as above
         public override bool CanBeInlined => false;
-        
+
         public ControlBlockInstruction(in Instruction instruction, IReadOnlyList<IntermediateInstruction> block1, IReadOnlyList<IntermediateInstruction>? block2)
         {
             Kind = instruction.OpCode switch {
@@ -32,9 +36,6 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
                 Block2 = new ControlBlock(block2, ValueKind);
             }
         }
-
-        public override ValueKind[] PopTypes => Kind == ControlBlockKind.If ? new[] {ValueKind.I32} : new ValueKind[0];
-        public override ValueKind[] PushTypes => ValueKind != ValueKind.Empty ? new[] {ValueKind} : new ValueKind[0];
 
         public override string OperationStringFormat {
             get {
