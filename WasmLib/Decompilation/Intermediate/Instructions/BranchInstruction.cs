@@ -11,7 +11,7 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public uint Label { get; }
         public uint[]? Labels { get; }
         public override bool RestOfBlockUnreachable => Kind == BranchKind.Normal || Kind == BranchKind.Table;
-        public override bool IsOrderImportant => true;
+        public override bool ModifiesControlFlow => true;
 
         public BranchInstruction(in Instruction instruction)
         {

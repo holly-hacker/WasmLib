@@ -9,7 +9,7 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
 
         public override string OperationStringFormat => "// UNREACHABLE";
         public override bool RestOfBlockUnreachable => true;
-        public override bool IsOrderImportant => true;
+        public override bool ModifiesControlFlow => true;
         public override bool CanBeInlined => false;
     }
 }

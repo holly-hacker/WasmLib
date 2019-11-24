@@ -14,8 +14,9 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public ActionKind Action { get; }
         public uint Index { get; }
         public ValueKind Type => Target == TargetKind.Local ? GetLocal(Index) : GetGlobal(Index);
-        public override bool IsOrderImportant => Action != ActionKind.Get;
-        public override bool CanBeInlined => Action != ActionKind.Tee;
+        public override StateKind ModifiesState => Action == ActionKind.Get ? StateKind.None : Target == TargetKind.Global ? StateKind.Globals : StateKind.Locals;
+        public override StateKind ReadsState => Action == ActionKind.Set ? StateKind.None : Target == TargetKind.Global ? StateKind.Globals : StateKind.Locals;
+        public override bool CanBeInlined => Action != ActionKind.Tee; // would cause assignments in comparisons
 
         private readonly WasmModule module;
         private readonly FunctionBody body;

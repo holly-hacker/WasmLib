@@ -9,10 +9,7 @@ namespace WasmLib.Decompilation.Intermediate.Graph
     {
         public IntermediateInstruction Instruction { get; }
         public int Index { get; }
-        public bool IsOrderImportant => Instruction.IsOrderImportant;
 
-        public IEnumerable<ImpurityDependencyEdge> OutgoingImpurityEdges => OutgoingEdges.OfType<ImpurityDependencyEdge>();
-        public IEnumerable<ImpurityDependencyEdge> IncomingImpurityEdges => IncomingEdges.OfType<ImpurityDependencyEdge>();
         public IEnumerable<StackVariableEdge> OutgoingVariableEdges => OutgoingEdges.OfType<StackVariableEdge>();
         public IEnumerable<StackVariableEdge> IncomingVariableEdges => IncomingEdges.OfType<StackVariableEdge>();
         public Rivers.Graph? Block1 { get; }

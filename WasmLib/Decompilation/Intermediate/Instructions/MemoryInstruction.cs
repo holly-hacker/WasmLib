@@ -14,7 +14,8 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
         public uint Offset { get; }
         public uint Alignment { get; }
 
-        public override bool IsOrderImportant => true;
+        public override StateKind ModifiesState => Action == ActionKind.Store ? StateKind.Memory : StateKind.None;
+        public override StateKind ReadsState => Action == ActionKind.Load ? StateKind.Memory : StateKind.None;
 
         public MemoryInstruction(in Instruction instruction)
         {

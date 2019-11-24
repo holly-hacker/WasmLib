@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -30,17 +29,15 @@ namespace WasmLib.Decompilation
             List<IntermediateInstruction> instructions = new IntermediateConverter(WasmModule, body, signature).Convert();
 
             Graph graph = CreateGraph(instructions);
-            
-            // TODO: remove subtrees with no side effects?
 
             output.Write(signature.ToString($"fun_{functionIndex:X8}"));
             output.WriteLine(" {");
             OutputAsCode(graph, output);
             output.WriteLine("}");
             output.WriteLine();
-            
-            // var writer = new DotWriter(output);
-            // writer.Write(graph);
+
+            // using var sw = new StreamWriter(File.Open("graph.dot", FileMode.Create));
+            // new DotWriter(sw).Write(graph);
         }
 
         private static Graph CreateGraph(IEnumerable<IntermediateInstruction> instructions)
@@ -69,12 +66,28 @@ namespace WasmLib.Decompilation
                     stack.Push((node, instruction.PushTypes[i]));
                 }
 
-                // if this instruction is not pure, add a dependency on the last impure instruction, if any
-                // NOTE: this could possibly be optimized by having different kinds of impurity
-                // TODO: edges not required anymore for decompiled code output?
-                if (node.IsOrderImportant) {
-                    InstructionNode? dependentInstruction = graph.Nodes.Cast<InstructionNode>().Reverse().Skip(1).FirstOrDefault(x => x.IsOrderImportant);
+                // add order dependencies
+                // TODO: add kind of impurity to node
+                // NOTE: edges not required anymore for decompiled code output, only for checking if graph is connected
+                // for control flow instructions, add reference to next and previous
+                if (node.Instruction.ModifiesControlFlow) {
+                    InstructionNode? dependentInstruction = graph.Nodes.Cast<InstructionNode>().Reverse().Skip(1).FirstOrDefault();
                     dependentInstruction?.OutgoingEdges.Add(new ImpurityDependencyEdge(dependentInstruction, node));
+                }
+                // add reference to previous if it was control flow
+                var prev = graph.Nodes.OfType<InstructionNode>().Reverse().Skip(1).FirstOrDefault();
+                if (prev != null && prev.Instruction.ModifiesControlFlow) {
+                    prev.OutgoingEdges.Add(new ImpurityDependencyEdge(prev, node));
+                }
+                if ((node.Instruction.ReadsState | node.Instruction.ModifiesState) != StateKind.None) {
+                    // attempt for every kind of state
+                    for (int i = 1; i < byte.MaxValue; i <<= 1) {
+                        InstructionNode? dependentInstruction = graph.Nodes
+                            .Cast<InstructionNode>()
+                            .Reverse().Skip(1)
+                            .FirstOrDefault(x => x.Instruction.HasConflictingState(node.Instruction, (StateKind)i));
+                        dependentInstruction?.OutgoingEdges.Add(new ImpurityDependencyEdge(dependentInstruction, node));
+                    }
                 }
             }
 
@@ -82,9 +95,11 @@ namespace WasmLib.Decompilation
             // Debug.Assert(!graph.IsCyclic(), "Got cyclic dependency in function!");
             if (!graph.IsConnected()) {
                 #if DEBUG
-                using (StreamWriter sw = new StreamWriter(File.OpenWrite("temp_unconnected.dot"))) new DotWriter(sw).Write(graph);
+                using (StreamWriter sw = new StreamWriter(File.Open("temp_unconnected.dot", FileMode.Create))) new DotWriter(sw).Write(graph);
                 #endif
-                throw new NotImplementedException();
+
+                // TODO: remove subtrees with no side effects?
+                Debugger.Break();
             }
 
             return graph;
@@ -99,7 +114,7 @@ namespace WasmLib.Decompilation
                 {ValueKind.F64, 0},
             };
             
-            var statements = new Dictionary<int, IExpression>();
+            var statements = new SortedDictionary<int, IExpression>();
             foreach (var currentNode in graph.Nodes.OfType<InstructionNode>()) {
                 var parameterEdges = currentNode.IncomingVariableEdges.ToArray();
 
@@ -112,7 +127,12 @@ namespace WasmLib.Decompilation
                     for (int i = 0; i < parameterEdges.Length; i++) {
                         var edge = parameterEdges[i];
                         var variableNode = edge.Source;
-                        var impureInstructions = graph.Nodes.OfType<InstructionNode>().Where(x => x.Index > variableNode.Index && x.Index < currentNode.Index && x.IsOrderImportant);
+
+                        // only inline if inlinee and inliner are not separated by instructions that would affect the inlinee
+                        var impureInstructions = graph.Nodes
+                            .OfType<InstructionNode>()
+                            .Where(n => n.Index > variableNode.Index && n.Index < currentNode.Index)
+                            .Where(n => n.Instruction.ModifiesControlFlow || variableNode.Instruction.HasConflictingState(n.Instruction));
 
                         if (currentNode.Instruction.CanInline && variableNode.Instruction.CanBeInlined && !impureInstructions.Any()) {
                             parameters[i] = statements[variableNode.Index];

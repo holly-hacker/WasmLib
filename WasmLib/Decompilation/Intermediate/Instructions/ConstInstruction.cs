@@ -9,7 +9,6 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
     {
         public ValueKind Type { get; }
         public ulong RawOperand { get; }
-        public override bool IsOrderImportant => false;
         
         public ConstInstruction(in Instruction instruction)
         {

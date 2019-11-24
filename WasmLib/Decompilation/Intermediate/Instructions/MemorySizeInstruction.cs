@@ -7,7 +7,8 @@ namespace WasmLib.Decompilation.Intermediate.Instructions
     public class MemorySizeInstruction : IntermediateInstruction
     {
         public OperationKind Operation { get; }
-        public override bool IsOrderImportant => true;
+        public override StateKind ModifiesState => Operation == OperationKind.Grow ? StateKind.Memory : StateKind.None;
+        public override StateKind ReadsState => Operation == OperationKind.Size ? StateKind.Memory : StateKind.None;
 
         public MemorySizeInstruction(in Instruction instruction)
         {
