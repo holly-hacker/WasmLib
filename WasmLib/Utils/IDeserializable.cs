@@ -2,7 +2,7 @@ using System.IO;
 
 namespace WasmLib.Utils
 {
-    interface IDeserializable
+    internal interface IDeserializable
     {
         void Read(BinaryReader br);
     }

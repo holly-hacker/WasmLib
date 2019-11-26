@@ -7,7 +7,7 @@ using WasmLib.FileFormat.Instructions;
 
 namespace WasmLib.Utils
 {
-    static class BinaryReaderExtensions
+    internal static class BinaryReaderExtensions
     {
         public static byte ReadVarUint7(this BinaryReader br)
         {
