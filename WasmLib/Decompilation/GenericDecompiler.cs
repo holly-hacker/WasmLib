@@ -7,6 +7,7 @@ using Rivers.Analysis;
 using Rivers.Serialization.Dot;
 using WasmLib.Decompilation.Intermediate;
 using WasmLib.Decompilation.Intermediate.Graph;
+using WasmLib.Decompilation.Intermediate.Instructions;
 using WasmLib.Decompilation.SourceCode;
 using WasmLib.FileFormat;
 
@@ -54,6 +55,12 @@ namespace WasmLib.Decompilation
                         : new InstructionNode(instruction, instructionNum++, CreateGraph(instruction.Block1!.Instructions), CreateGraph(instruction.Block2.Instructions));
                 
                 graph.Nodes.Add(node);
+
+                // TODO: investigate, how do I properly solve this
+                if (instruction is ImplicitReturnInstruction && stack.Count < 1) {
+                    // ugh
+                    continue;
+                }
 
                 Debug.Assert(instruction.PushCount <= 1, "Instruction pushed multiple variables to stack, which shouldn't happen.");
                 for (int i = 0; i < instruction.PopCount; i++) {
